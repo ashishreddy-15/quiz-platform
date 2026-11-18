@@ -1,7 +1,9 @@
 // SHARED CONTRACT — do not edit without coordinating. Zod schemas are the single source of truth; types derive from them.
 import { z } from "zod";
 
-export const SubjectSchema = z.enum(["math", "physics", "chemistry"]);
+/** Subject/topic slug. Presets use "math" | "physics" | "chemistry"; AI-generated topics use a slug of the topic. */
+export const SubjectSchema = z.string().min(1).max(80);
+export const PRESET_SUBJECTS = ["math", "physics", "chemistry"] as const;
 export type Subject = z.infer<typeof SubjectSchema>;
 
 export const ConceptSchema = z.object({
@@ -130,3 +132,19 @@ export const ShortGradeSchema = z.object({
   partial_credit: z.number().min(0).max(1),
   feedback: z.string(),
 });
+
+/**
+ * A self-contained quiz context: the concept DAG + the 5 diagnostic questions (WITH answer keys).
+ * Produced by POST /api/generate (AI, any topic) or POST /api/quiz (preset bank).
+ * The client keeps it in the store and sends it back with every later request (routes are stateless).
+ */
+export const TopicPackSchema = z.object({
+  id: z.string(),
+  topic: z.string(), // human title, e.g. "Photosynthesis"
+  subject: SubjectSchema, // slug
+  level: z.string(), // e.g. "Grade 8", "Intro college"
+  source: z.enum(["ai", "preset"]),
+  concepts: z.array(ConceptSchema).min(3).max(14),
+  questions: z.array(QuestionSchema).min(3).max(8),
+});
+export type TopicPack = z.infer<typeof TopicPackSchema>;

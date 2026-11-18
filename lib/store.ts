@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { DiagnoseRes, Interest } from "./api-contract";
-import type { GradedResponse, MasteryItem, PublicQuestion, StudentResponse, Subject, TeachbackResult } from "./schema";
+import type { GradedResponse, MasteryItem, PublicQuestion, StudentResponse, Subject, TeachbackResult, TopicPack } from "./schema";
 
 export type Phase = "pick" | "quiz" | "diagnosing" | "diagnosis" | "lesson" | "mastery" | "teachback" | "report";
 
@@ -20,6 +20,8 @@ export type SessionState = {
   sessionId: string;
   phase: Phase;
   subject: Subject | null;
+  /** Concepts + questions for this session (AI-generated or preset). Send with every API call. */
+  pack: TopicPack | null;
   interest: Interest;
   questions: PublicQuestion[];
   responses: StudentResponse[];
@@ -33,6 +35,8 @@ export type SessionState = {
   // actions
   start: (subject: Subject, interest: Interest) => void;
   setQuestions: (q: PublicQuestion[]) => void;
+  /** Stores the pack and its questions (toPublic-style) and keeps phase at "quiz". */
+  setPack: (pack: TopicPack) => void;
   answer: (r: StudentResponse) => void;
   setGraded: (g: GradedResponse[]) => void;
   setDiagnosis: (d: DiagnoseRes) => void;
@@ -49,6 +53,7 @@ export type SessionState = {
 const initial = {
   phase: "pick" as Phase,
   subject: null,
+  pack: null as TopicPack | null,
   interest: "sports" as Interest,
   questions: [],
   responses: [],
@@ -70,6 +75,16 @@ export const useSession = create<SessionState>()(
       ...initial,
       start: (subject, interest) => set({ ...initial, sessionId: newId(), subject, interest, phase: "quiz" }),
       setQuestions: (questions) => set({ questions, responses: [] }),
+      setPack: (pack) =>
+        set({
+          pack,
+          subject: pack.subject,
+          responses: [],
+          questions: pack.questions.map((q) => ({
+            id: q.id, subject: q.subject, type: q.type, difficulty: q.difficulty, stem: q.stem, concepts: q.concepts,
+            options: q.options?.map((o) => ({ id: o.id, text: o.text, misconception: null })),
+          })),
+        }),
       answer: (r) => set({ responses: [...get().responses.filter((x) => x.qid !== r.qid), r] }),
       setGraded: (graded) => set({ graded, phase: "diagnosing" }),
       setDiagnosis: (d) => {
@@ -110,6 +125,6 @@ export const useSession = create<SessionState>()(
       setPhase: (phase) => set({ phase }),
       reset: () => set({ ...initial, sessionId: newId() }),
     }),
-    { name: "gapfinder-session" },
+    { name: "gapfinder-session-v2" },
   ),
 );
