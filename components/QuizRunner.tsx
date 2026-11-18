@@ -1,170 +1,164 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import clsx from "clsx";
-import { getQuiz, grade } from "@/lib/client-api";
-import type { PublicQuestion, StudentResponse } from "@/lib/schema";
+import { grade } from "@/lib/client-api";
+import type { StudentResponse } from "@/lib/schema";
 import { useSession } from "@/lib/store";
+import { IconArrowLeft, IconArrowRight, IconChevronDown, IconChevronRight, Spinner } from "./icons";
 import { Md } from "./Md";
-import { Button, Card, ErrorBox, Skeleton, Spinner } from "./ui";
+import { Button, ErrorBox, Label, OptionRow, Page, ProgressBar, Segmented } from "./ui";
 
-const LABELS = ["Guessing", "Unsure", "Pretty sure", "Certain"];
+const CONFIDENCE = [
+  { value: 0.15, label: "Guessing" },
+  { value: 0.4, label: "Unsure" },
+  { value: 0.7, label: "Fairly sure" },
+  { value: 0.95, label: "Certain" },
+];
+const nearestConfidence = (c: number) => CONFIDENCE.reduce((a, b) => (Math.abs(b.value - c) < Math.abs(a.value - c) ? b : a)).value;
 
-function ConfidenceSlider({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const idx = value < 25 ? 0 : value < 50 ? 1 : value < 80 ? 2 : 3;
-  return (
-    <div>
-      <div className="flex items-baseline justify-between">
-        <span className="font-semibold text-slate-200">How sure are you?</span>
-        <span className="text-sm font-bold text-indigo-300">{value}% · {LABELS[idx]}</span>
-      </div>
-      <input type="range" min={0} max={100} step={5} value={value} onChange={(e) => onChange(+e.target.value)}
-        className="mt-3 h-2 w-full cursor-pointer appearance-none rounded-full accent-indigo-400"
-        style={{ background: `linear-gradient(90deg,#6366f1 ${value}%,#1e293b ${value}%)` }} aria-label="Confidence" />
-      <div className="mt-2 flex justify-between text-[11px] text-slate-500 sm:text-xs">
-        {LABELS.map((l, i) => <span key={l} className={clsx(i === idx && "font-semibold text-indigo-300")}>{l}</span>)}
-      </div>
-    </div>
+type Draft = { answer: string; confidence: number | null; why: string; ms: number };
+
+export function QuizRunner() {
+  const questions = useSession((s) => s.questions);
+  const pack = useSession((s) => s.pack);
+  const stored = useSession((s) => s.responses);
+  const saveAnswer = useSession((s) => s.answer);
+  const setGraded = useSession((s) => s.setGraded);
+
+  const [drafts, setDrafts] = useState<Record<string, Draft>>(() =>
+    Object.fromEntries(stored.map((r) => [r.qid, { answer: r.answer, confidence: nearestConfidence(r.confidence), why: r.rationale ?? "", ms: r.timeMs }])),
   );
-}
-
-function QuestionCard({ q, index, total, last, onSubmit, busy }: {
-  q: PublicQuestion; index: number; total: number; last: boolean; busy: boolean; onSubmit: (r: StudentResponse) => void;
-}) {
-  const [answer, setAnswer] = useState("");
-  const [confidence, setConfidence] = useState(50);
-  const [why, setWhy] = useState("");
+  const [idx, setIdx] = useState(() => Math.min(stored.length, Math.max(0, questions.length - 1)));
   const [showWhy, setShowWhy] = useState(false);
-  const t0 = useRef(0);
-  useEffect(() => { t0.current = Date.now(); }, []);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const shownAt = useRef(Date.now());
 
-  const ready = answer.trim().length > 0 && !busy;
-  const submit = useCallback(() => {
+  const q = questions[idx];
+  const d: Draft = useMemo(() => drafts[q?.id] ?? { answer: "", confidence: null, why: "", ms: 0 }, [drafts, q?.id]);
+  const last = idx === questions.length - 1;
+  const ready = d.answer.trim().length > 0 && d.confidence !== null && !busy;
+
+  useEffect(() => {
+    shownAt.current = Date.now();
+    setShowWhy(!!drafts[questions[idx]?.id]?.why);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx]);
+
+  const patch = useCallback((p: Partial<Draft>) => {
+    if (!q) return;
+    setDrafts((all) => ({ ...all, [q.id]: { ...(all[q.id] ?? { answer: "", confidence: null, why: "", ms: 0 }), ...p } }));
+  }, [q]);
+
+  const commit = useCallback((): Record<string, Draft> => {
+    const elapsed = Date.now() - shownAt.current;
+    shownAt.current = Date.now();
+    const next = { ...drafts, [q.id]: { ...d, ms: d.ms + elapsed } };
+    setDrafts(next);
+    if (next[q.id].answer && next[q.id].confidence !== null) {
+      saveAnswer({ qid: q.id, answer: d.answer.trim(), confidence: d.confidence!, timeMs: next[q.id].ms, ...(d.why.trim() ? { rationale: d.why.trim() } : {}) });
+    }
+    return next;
+  }, [drafts, q, d, saveAnswer]);
+
+  const finish = useCallback(async (all: Record<string, Draft>) => {
+    setBusy(true); setError(null);
+    const responses: StudentResponse[] = questions.map((x) => {
+      const r = all[x.id];
+      return { qid: x.id, answer: r.answer.trim(), confidence: r.confidence ?? 0.4, timeMs: r.ms, ...(r.why.trim() ? { rationale: r.why.trim() } : {}) };
+    });
+    try {
+      const { graded } = await grade(responses, pack);
+      setGraded(graded);
+    } catch (e) { setError((e as Error).message); setBusy(false); }
+  }, [questions, pack, setGraded]);
+
+  const next = useCallback(() => {
     if (!ready) return;
-    onSubmit({ qid: q.id, answer: answer.trim(), confidence: confidence / 100, timeMs: Date.now() - t0.current, rationale: why.trim() || undefined });
-  }, [ready, onSubmit, q.id, answer, confidence, why]);
+    const all = commit();
+    if (last) void finish(all);
+    else setIdx((i) => i + 1);
+  }, [ready, commit, last, finish]);
+
+  const back = useCallback(() => {
+    if (idx === 0 || busy) return;
+    commit();
+    setIdx((i) => i - 1);
+  }, [idx, busy, commit]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
-      if (e.key === "Enter" && tag !== "TEXTAREA") { e.preventDefault(); submit(); return; }
-      if (tag === "INPUT" || tag === "TEXTAREA") return;
-      const n = Number(e.key);
-      if (q.type === "mcq" && q.options && n >= 1 && n <= q.options.length) setAnswer(q.options[n - 1].id);
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === "Enter" && tag !== "TEXTAREA" && tag !== "BUTTON") { e.preventDefault(); next(); return; }
+      if (tag === "INPUT" || tag === "TEXTAREA" || !q?.options) return;
+      const k = e.key.toLowerCase();
+      const n = /^[1-9]$/.test(k) ? Number(k) - 1 : /^[a-h]$/.test(k) ? k.charCodeAt(0) - 97 : -1;
+      if (n >= 0 && n < q.options.length) patch({ answer: q.options[n].id });
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [q, submit]);
+  }, [q, next, patch]);
+
+  if (!q) return null;
+  const helper = !d.answer ? "Choose an answer" : d.confidence === null ? "Pick how sure you are to continue" : null;
 
   return (
-    <Card>
-      <div className="text-sm font-medium text-indigo-300">Question {index + 1} of {total}</div>
-      <div className="mt-2 text-xl font-semibold leading-snug sm:text-2xl"><Md>{q.stem}</Md></div>
+    <Page>
+      <div className="flex items-center justify-between text-[13px]">
+        <span className="font-medium text-text-2">Question <span className="text-text">{idx + 1}</span> of {questions.length}</span>
+        <span className="hidden text-text-3 sm:inline">No right or wrong shown until the end</span>
+      </div>
+      <ProgressBar className="mt-2.5" value={(idx + (ready ? 1 : 0)) / questions.length} />
 
-      <div className="mt-6">
-        {q.type === "mcq" && q.options ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {q.options.map((o, i) => (
-              <button key={o.id} onClick={() => setAnswer(o.id)}
-                className={clsx("flex items-center gap-3 rounded-xl border-2 p-4 text-left text-lg transition",
-                  answer === o.id ? "border-indigo-400 bg-indigo-500/20" : "border-slate-700 bg-slate-900/50 hover:border-slate-500")}>
-                <span className={clsx("grid h-8 w-8 shrink-0 place-items-center rounded-lg text-sm font-bold",
-                  answer === o.id ? "bg-indigo-500 text-white" : "bg-slate-700 text-slate-300")}>{String.fromCharCode(65 + i)}</span>
-                <Md>{o.text}</Md>
-              </button>
-            ))}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div key={q.id} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.14 }}>
+          <div className="mt-8 text-[20px] font-semibold leading-snug tracking-[-0.015em]"><Md>{q.stem}</Md></div>
+
+          <div className="mt-6 space-y-2">
+            {q.type === "mcq" && q.options ? (
+              q.options.map((o, i) => (
+                <OptionRow key={o.id} letter={String.fromCharCode(65 + i)} text={o.text} state={d.answer === o.id ? "selected" : "idle"} onClick={() => patch({ answer: o.id })} />
+              ))
+            ) : (
+              <input autoFocus value={d.answer} onChange={(e) => patch({ answer: e.target.value })} placeholder="Type your answer"
+                className="h-11 w-full rounded-lg border border-border-strong bg-surface px-3.5 text-[15px] outline-none placeholder:text-text-3 focus:border-accent" />
+            )}
           </div>
-        ) : (
-          <input autoFocus value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Type your answer…"
-            className="w-full rounded-xl border-2 border-slate-700 bg-slate-900/60 px-4 py-3 text-lg outline-none focus:border-indigo-400" />
-        )}
-      </div>
 
-      <div className="mt-8"><ConfidenceSlider value={confidence} onChange={setConfidence} /></div>
+          <div className="mt-8">
+            <Label className="mb-2">How sure are you?</Label>
+            <Segmented label="How sure are you?" value={d.confidence} onChange={(v) => patch({ confidence: v })} options={CONFIDENCE} />
+          </div>
 
-      <div className="mt-5">
-        <button onClick={() => setShowWhy((v) => !v)} className="text-sm text-slate-400 hover:text-slate-200">
-          {showWhy ? "▾" : "▸"} Why did you pick this? <span className="text-slate-600">(optional)</span>
-        </button>
-        {showWhy && (
-          <textarea value={why} onChange={(e) => setWhy(e.target.value)} rows={2} placeholder="Tell us how you were thinking…"
-            className="mt-2 w-full rounded-xl border border-slate-700 bg-slate-900/60 px-4 py-3 outline-none focus:border-indigo-400" />
-        )}
-      </div>
-
-      <div className="mt-6 flex items-center justify-between">
-        <span className="hidden text-xs text-slate-500 sm:inline">Press 1–4 to choose · Enter to continue</span>
-        <Button className="ml-auto" disabled={!ready} onClick={submit}>
-          {busy ? <><Spinner /> Grading…</> : last ? "Finish & find my gaps →" : "Next →"}
-        </Button>
-      </div>
-    </Card>
-  );
-}
-
-function Quiz({ questions }: { questions: PublicQuestion[] }) {
-  const stored = useSession((s) => s.responses);
-  const answer = useSession((s) => s.answer);
-  const setGraded = useSession((s) => s.setGraded);
-  const collected = useRef<StudentResponse[]>(stored);
-  const [idx, setIdx] = useState(stored.length < questions.length ? stored.length : 0);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const finish = useCallback(async () => {
-    setBusy(true); setError(null);
-    try {
-      const { graded } = await grade(collected.current);
-      setGraded(graded);
-    } catch (e) { setError((e as Error).message); setBusy(false); }
-  }, [setGraded]);
-
-  const onSubmit = (r: StudentResponse) => {
-    answer(r);
-    collected.current = [...collected.current.filter((x) => x.qid !== r.qid), r];
-    if (idx + 1 >= questions.length) void finish();
-    else setIdx(idx + 1);
-  };
-
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-5 flex items-center justify-center gap-2">
-        {questions.map((q, i) => (
-          <span key={q.id} className={clsx("h-2.5 rounded-full transition-all", i === idx ? "w-8 bg-indigo-400" : i < idx ? "w-2.5 bg-emerald-400" : "w-2.5 bg-slate-700")} />
-        ))}
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div key={questions[idx].id} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.25 }}>
-          <QuestionCard q={questions[idx]} index={idx} total={questions.length} last={idx + 1 >= questions.length} busy={busy} onSubmit={onSubmit} />
+          <div className="mt-5">
+            <button onClick={() => setShowWhy((v) => !v)} className="flex items-center gap-1.5 text-[13px] text-text-2 hover:text-text" aria-expanded={showWhy}>
+              {showWhy ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+              Explain your thinking <span className="text-text-3">· optional</span>
+            </button>
+            {showWhy && (
+              <textarea value={d.why} onChange={(e) => patch({ why: e.target.value })} rows={3} placeholder="How did you get your answer?"
+                className="mt-2 w-full resize-y rounded-lg border border-border-strong bg-surface px-3.5 py-2.5 text-[14px] outline-none placeholder:text-text-3 focus:border-accent" />
+            )}
+          </div>
         </motion.div>
       </AnimatePresence>
-      {error && <div className="mt-4"><ErrorBox message={error} onRetry={finish} /></div>}
-    </div>
-  );
-}
 
-export function QuizRunner() {
-  const subject = useSession((s) => s.subject);
-  const questions = useSession((s) => s.questions);
-  const setQuestions = useSession((s) => s.setQuestions);
-  const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
+      {error && <div className="mt-6"><ErrorBox message={error} onRetry={() => void finish(drafts)} /></div>}
 
-  useEffect(() => {
-    if (!subject || questions.length > 0) return;
-    let live = true;
-    setError(null);
-    getQuiz(subject).then((r) => live && setQuestions(r.questions)).catch((e: Error) => live && setError(e.message));
-    return () => { live = false; };
-  }, [subject, questions.length, setQuestions, tick]);
-
-  if (error) return <div className="mx-auto max-w-xl p-6"><ErrorBox message={error} onRetry={() => setTick((t) => t + 1)} /></div>;
-  if (questions.length === 0)
-    return (
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-        <p className="text-center text-slate-400">Preparing your questions…</p>
-        <Skeleton className="h-64 w-full" /><Skeleton className="h-24 w-full" />
+      <div className="mt-8 flex items-center gap-3 border-t border-border pt-5">
+        <Button variant="secondary" onClick={back} disabled={idx === 0 || busy}><IconArrowLeft /> Back</Button>
+        <span className="hidden flex-1 items-center gap-1.5 text-[12px] text-text-3 md:flex">
+          <kbd>A</kbd>–<kbd>D</kbd> choose <span className="mx-1">·</span> <kbd>Enter</kbd> next
+        </span>
+        <div className="ml-auto flex items-center gap-3">
+          {helper && <span className="hidden text-[13px] text-text-3 sm:inline">{helper}</span>}
+          <Button onClick={next} disabled={!ready}>
+            {busy ? <><Spinner /> Checking</> : last ? <>Finish quiz <IconArrowRight /></> : <>Next <IconArrowRight /></>}
+          </Button>
+        </div>
       </div>
-    );
-  return <Quiz questions={questions} />;
+      {helper && <p className="mt-2 text-right text-[13px] text-text-3 sm:hidden">{helper}</p>}
+    </Page>
+  );
 }

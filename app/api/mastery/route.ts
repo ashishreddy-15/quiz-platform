@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getConcept } from "@/lib/graph";
+import { graphFor } from "@/lib/graph";
 import { chatJSON } from "@/lib/llm";
 import { masteryPrompt } from "@/lib/prompts";
 import { getFallbackMastery } from "@/lib/fallback";
-import { MasteryItemsSchema, type MasteryItem } from "@/lib/schema";
+import { MasteryItemsSchema, TopicPackSchema, type MasteryItem } from "@/lib/schema";
 import { parseBody, safeErr } from "@/lib/route-util";
 import type { MasteryRes } from "@/lib/api-contract";
 
@@ -35,18 +35,18 @@ function normalizeItems(items: MasteryItem[]): MasteryItem[] {
 }
 
 export async function POST(req: Request) {
-  const p = await parseBody(req, z.object({ conceptId: z.string(), misconception: z.string().max(1000), attempt: z.number().int().min(1).max(10), workedExample: z.string().max(4000).optional() }));
+  const p = await parseBody(req, z.object({ conceptId: z.string(), misconception: z.string().max(1000), attempt: z.number().int().min(1).max(10), workedExample: z.string().max(4000).optional(), pack: TopicPackSchema.optional() }));
   if (!p.ok) return p.res;
-  const concept = getConcept(p.data.conceptId);
+  const concept = graphFor(p.data.pack).getConcept(p.data.conceptId);
   if (!concept) return NextResponse.json({ error: "Unknown concept" }, { status: 400 });
   try {
     const { system, user } = masteryPrompt(concept, p.data);
-    const r = await chatJSON({ system, user, toolName: "create_mastery_items", toolDescription: "Create 3 mastery-check MCQ items", schema: MasteryItemsSchema, temperature: 0.5 });
+    const r = await chatJSON({ reasoning: "low", system, user, toolName: "create_mastery_items", toolDescription: "Create 3 mastery-check MCQ items", schema: MasteryItemsSchema, temperature: 0.5 });
     const out: MasteryRes = { items: normalizeItems(r.items) };
     return NextResponse.json(out);
   } catch (e) {
     console.error("mastery failed:", safeErr(e));
-    const out: MasteryRes = { items: getFallbackMastery(p.data.conceptId), fallback: true };
+    const out: MasteryRes = { items: getFallbackMastery(p.data.conceptId, p.data.pack), fallback: true };
     return NextResponse.json(out);
   }
 }

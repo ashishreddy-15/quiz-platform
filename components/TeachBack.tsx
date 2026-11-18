@@ -1,52 +1,45 @@
 "use client";
 import { useState } from "react";
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import { teachback } from "@/lib/client-api";
 import type { TeachbackResult } from "@/lib/schema";
 import { useSession } from "@/lib/store";
-import { conceptName, useGraph } from "./hooks";
-import { Badge, Button, Card, ErrorBox, Spinner } from "./ui";
+import { conceptName, useConcepts } from "./hooks";
+import { IconAlert, IconArrowRight, IconSpark, Spinner } from "./icons";
+import { Button, ErrorBox, Label, Page, ProgressBar } from "./ui";
 
-function Ring({ score }: { score: number }) {
-  const r = 52, c = 2 * Math.PI * r;
-  const color = score >= 75 ? "#34d399" : score >= 50 ? "#fbbf24" : "#fb7185";
+function Meter({ label, v }: { label: string; v: number }) {
   return (
-    <svg viewBox="0 0 120 120" className="h-36 w-36">
-      <circle cx="60" cy="60" r={r} fill="none" stroke="#1e293b" strokeWidth="10" />
-      <motion.circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="10" strokeLinecap="round" transform="rotate(-90 60 60)"
-        strokeDasharray={c} initial={{ strokeDashoffset: c }} animate={{ strokeDashoffset: c * (1 - score / 100) }} transition={{ duration: 1.1, ease: "easeOut" }} />
-      <text x="60" y="68" textAnchor="middle" fontSize="28" fontWeight="800" fill="#fff">{Math.round(score)}</text>
-    </svg>
-  );
-}
-function Bar({ label, v }: { label: string; v: number }) {
-  return (
-    <div>
-      <div className="flex justify-between text-sm"><span className="text-slate-300">{label}</span><span className="font-semibold">{v.toFixed(1)}/10</span></div>
-      <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-800">
-        <motion.div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-400" initial={{ width: 0 }} animate={{ width: `${v * 10}%` }} transition={{ duration: 0.9 }} />
-      </div>
+    <div className="grid grid-cols-[110px_minmax(0,1fr)_48px] items-center gap-3 px-4 py-3">
+      <span className="text-text-2">{label}</span>
+      <ProgressBar value={v / 10} tone={v >= 7 ? "success" : "accent"} />
+      <span className="text-right tabular-nums text-text">{v.toFixed(1)}<span className="text-text-3">/10</span></span>
     </div>
   );
 }
 
 export function TeachBack() {
   const conceptId = useSession((s) => s.currentGap)!;
-  const subject = useSession((s) => s.subject);
+  const pack = useSession((s) => s.pack);
   const diagnosis = useSession((s) => s.diagnosis);
+  const gapQueue = useSession((s) => s.gapQueue);
   const recordTeachback = useSession((s) => s.recordTeachback);
   const nextGap = useSession((s) => s.nextGap);
-  const { concepts } = useGraph(subject);
+  const concepts = useConcepts();
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TeachbackResult | null>(null);
+  const name = conceptName(concepts, conceptId);
+  const isLast = gapQueue.length <= 1;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   const submit = async () => {
     setBusy(true); setError(null);
     try {
       const gap = diagnosis?.root_gaps.find((g) => g.concept_id === conceptId);
-      const r = await teachback({ conceptId, explanation: text.trim(), misconception: gap?.student_facing_summary ?? "" });
+      const r = await teachback({ conceptId, explanation: text.trim(), misconception: gap?.student_facing_summary ?? "", ...(pack ? { pack } : {}) });
       recordTeachback(conceptId, r);
       setResult(r);
     } catch (e) { setError((e as Error).message); }
@@ -54,35 +47,49 @@ export function TeachBack() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <Card>
-        <Badge tone="violet">Teach it back</Badge>
-        <h2 className="mt-3 text-2xl font-bold">Explain {conceptName(concepts, conceptId)} to a 10-year-old</h2>
-        <p className="mt-1 text-slate-400">If you can teach it simply, you really understand it.</p>
-        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={6} disabled={!!result || busy}
-          placeholder="Imagine your little cousin asks you about this…" className="mt-4 w-full rounded-xl border border-slate-700 bg-slate-900/60 p-4 text-lg outline-none focus:border-indigo-400" />
-        {!result && (
-          <div className="mt-4 flex gap-3">
-            <Button disabled={text.trim().length < 10 || busy} onClick={submit}>{busy ? <><Spinner /> Evaluating…</> : "Check my explanation"}</Button>
-            <Button variant="ghost" onClick={nextGap}>Skip</Button>
-          </div>
-        )}
-        {error && <div className="mt-4"><ErrorBox message={error} onRetry={submit} /></div>}
-      </Card>
+    <Page>
+      <Label>Explain it back · {name}</Label>
+      <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em]">Explain it as if to a friend</h1>
+      <p className="mt-2 text-[15px] text-text-2">In two or three sentences, say what {name.toLowerCase()} means and why it matters. If you can teach it, you know it.</p>
+
+      <div className="mt-6">
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={6} disabled={!!result || busy} autoFocus
+          placeholder="So basically…" aria-label="Your explanation"
+          className="w-full resize-y rounded-lg border border-border-strong bg-surface px-3.5 py-3 text-[15px] leading-relaxed outline-none placeholder:text-text-3 focus:border-accent disabled:opacity-70" />
+        <div className="mt-1 text-right text-[12px] tabular-nums text-text-3">{words} words</div>
+      </div>
+
+      {!result && (
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Button size="lg" disabled={words < 3 || busy} onClick={submit}>{busy ? <><Spinner /> Reading your explanation</> : "Check my explanation"}</Button>
+          <Button size="lg" variant="ghost" onClick={nextGap} disabled={busy}>Skip</Button>
+        </div>
+      )}
+      {error && <div className="mt-4"><ErrorBox message={error} onRetry={submit} /></div>}
 
       {result && (
-        <Card className="mt-5">
-          <div className="flex flex-col items-center gap-6 sm:flex-row">
-            <Ring score={result.score} />
-            <div className="w-full space-y-4"><Bar label="Accuracy" v={result.accuracy} /><Bar label="Completeness" v={result.completeness} /></div>
+        <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16 }} className="mt-8">
+          <div className="overflow-hidden rounded-lg border border-border">
+            <div className="flex items-baseline gap-3 border-b border-border px-4 py-3">
+              <span className="text-text-2">Score</span>
+              <span className="ml-auto text-[20px] font-semibold tabular-nums">{Math.round(result.score)}<span className="text-[14px] font-normal text-text-3">/100</span></span>
+            </div>
+            <Meter label="Accuracy" v={result.accuracy} />
+            <div className="border-t border-border"><Meter label="Completeness" v={result.completeness} /></div>
+            {result.misconception_present && (
+              <div className="flex items-start gap-3 border-t border-border px-4 py-3">
+                <IconAlert className="mt-0.5 shrink-0 text-warning" />
+                <span>Part of the original misconception still shows up in your explanation.</span>
+              </div>
+            )}
+            <div className={clsx("flex items-start gap-3 border-t border-border bg-surface px-4 py-3")}>
+              <IconSpark className="mt-0.5 shrink-0 text-accent-text" />
+              <div><div className="text-[12px] font-medium uppercase tracking-[0.06em] text-text-3">Coaching tip</div><p className="mt-0.5">{result.tip}</p></div>
+            </div>
           </div>
-          {result.misconception_present && (
-            <div className="mt-5 rounded-xl border border-amber-400/40 bg-amber-500/10 p-3 text-amber-100">⚠️ Part of the original misconception still shows up in your explanation.</div>
-          )}
-          <div className="mt-4 rounded-xl bg-indigo-500/10 p-4 text-indigo-100"><span className="font-semibold">Coach tip:</span> {result.tip}</div>
-          <Button className="mt-5 w-full" onClick={nextGap}>Continue →</Button>
-        </Card>
+          <Button size="lg" className="mt-6" onClick={nextGap}>{isLast ? "See my report" : "Continue to next gap"} <IconArrowRight /></Button>
+        </motion.div>
       )}
-    </div>
+    </Page>
   );
 }

@@ -4,18 +4,28 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import { getMastery, streamLesson } from "@/lib/client-api";
 import { useSession } from "@/lib/store";
-import { ConceptGraph } from "./ConceptGraph";
-import { conceptName, useGraph } from "./hooks";
+import { conceptName, useConcepts } from "./hooks";
+import { IconArrowRight, IconChevronDown, IconChevronRight } from "./icons";
+import { LearningPath } from "./LearningPath";
 import { splitReveals, splitSections, type Section } from "./lesson-utils";
 import { Md } from "./Md";
-import { Badge, Button, ErrorBox, Skeleton } from "./ui";
+import { Badge, Button, ErrorBox, Label, Page, Skeleton } from "./ui";
 
 function Reveal({ summary, text }: { summary: string; text: string }) {
   const [open, setOpen] = useState(false);
+  const label = summary && !/answer/i.test(summary) ? summary : "Show answer";
   return (
-    <div className="my-3">
-      <Button variant="ghost" className="!py-2 text-sm" onClick={() => setOpen((v) => !v)}>{open ? "Hide" : "Reveal"} answer{summary && !/answer/i.test(summary) ? ` · ${summary}` : ""}</Button>
-      {open && <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4"><Md>{text}</Md></motion.div>}
+    <div className="my-3 rounded-lg border border-border">
+      <button onClick={() => setOpen((v) => !v)} aria-expanded={open}
+        className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[14px] font-medium text-text-2 hover:text-text">
+        {open ? <IconChevronDown size={14} /> : <IconChevronRight size={14} />}
+        {open ? "Hide answer" : label}
+      </button>
+      {open && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }} className="border-t border-border px-3.5 py-3 text-[15px]">
+          <Md>{text}</Md>
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -26,32 +36,35 @@ function SectionBody({ body, cursor }: { body: string; cursor: boolean }) {
     <>
       {segs.map((s, i) =>
         s.kind === "md" ? (
-          <div key={i} className={clsx(cursor && i === segs.length - 1 && "cursor-blink")}><Md>{s.text}</Md></div>
+          <div key={i} className={clsx(cursor && i === segs.length - 1 && "streaming")}><Md>{s.text}</Md></div>
         ) : <Reveal key={i} summary={s.summary} text={s.text} />,
       )}
-      {segs.length === 0 && cursor && <span className="cursor-blink" />}
+      {segs.length === 0 && cursor && <span className="caret" />}
     </>
   );
 }
 
-function SectionCard({ s, streaming }: { s: Section; streaming: boolean }) {
+function LessonSection({ s, streaming, interest }: { s: Section; streaming: boolean; interest: string }) {
   const analogy = s.heading.toLowerCase().startsWith("analogy");
+  if (analogy)
+    return (
+      <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}
+        className="rounded-md border-l-2 border-accent bg-surface-2 px-5 py-4">
+        <div className="mb-1.5 text-[12px] font-medium uppercase tracking-[0.06em] text-accent-text">Analogy · {interest}</div>
+        <div className="text-[15px] leading-relaxed text-text"><SectionBody body={s.body} cursor={streaming} /></div>
+      </motion.section>
+    );
   return (
-    <motion.section initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4 }}
-      className={clsx("rounded-2xl p-5 sm:p-6", analogy
-        ? "border border-fuchsia-400/40 bg-gradient-to-br from-indigo-500/25 via-violet-500/20 to-fuchsia-500/25 shadow-lg shadow-fuchsia-500/10"
-        : "glass")}>
-      <h3 className={clsx("mb-2 text-sm font-bold uppercase tracking-wider", analogy ? "text-fuchsia-200" : "text-indigo-300")}>
-        {analogy ? "🔗 " : ""}{s.heading}
-      </h3>
-      <div className="text-lg"><SectionBody body={s.body} cursor={streaming} /></div>
+    <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.16 }}>
+      <h2 className="mb-2 text-[16px] font-semibold tracking-[-0.01em]">{s.heading}</h2>
+      <div className="text-[15px] leading-relaxed text-text/90"><SectionBody body={s.body} cursor={streaming} /></div>
     </motion.section>
   );
 }
 
 export function LessonPlayer() {
   const conceptId = useSession((s) => s.currentGap)!;
-  const subject = useSession((s) => s.subject);
+  const pack = useSession((s) => s.pack);
   const interest = useSession((s) => s.interest);
   const diagnosis = useSession((s) => s.diagnosis);
   const graded = useSession((s) => s.graded);
@@ -61,7 +74,7 @@ export function LessonPlayer() {
   const setLesson = useSession((s) => s.setLesson);
   const setMasteryItems = useSession((s) => s.setMasteryItems);
   const setPhase = useSession((s) => s.setPhase);
-  const { concepts } = useGraph(subject);
+  const concepts = useConcepts();
 
   const [text, setText] = useState(stored);
   const [done, setDone] = useState(stored.length > 0);
@@ -71,8 +84,12 @@ export function LessonPlayer() {
   const attempts = progress?.attempts ?? 1;
   const ran = useRef(false);
 
+  const gaps = diagnosis?.root_gaps ?? [];
+  const gapNo = Math.max(1, gaps.findIndex((g) => g.concept_id === conceptId) + 1);
+  const concept = concepts.find((c) => c.id === conceptId);
+
   const req = useMemo(() => {
-    const gap = diagnosis?.root_gaps.find((g) => g.concept_id === conceptId);
+    const gap = gaps.find((g) => g.concept_id === conceptId);
     const qid = gap?.explains_qids.find((q) => graded.some((g) => g.qid === q && !g.correct)) ?? gap?.explains_qids[0];
     const g = graded.find((x) => x.qid === qid) ?? graded.find((x) => !x.correct);
     const misconception = diagnosis?.per_question.find((p) => p.qid === g?.qid)?.misconception || gap?.student_facing_summary || "";
@@ -80,9 +97,10 @@ export function LessonPlayer() {
     return {
       conceptId, misconception, wrongAnswer: g?.chosenText ?? "", stem: g?.stem ?? "", interest, attempt: attempts,
       ...(prev ? { previousAnalogy: prev } : {}),
+      ...(pack ? { pack } : {}),
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conceptId, attempts, interest, diagnosis, graded]);
+  }, [conceptId, attempts, interest, diagnosis, graded, pack]);
 
   useEffect(() => {
     if (stored.length > 0 && tick === 0) return; // resumed from persisted state
@@ -93,8 +111,9 @@ export function LessonPlayer() {
     streamLesson(req, setText, ac.signal)
       .then(({ text: t, fallback: f }) => { setText(t); setLesson(t); setFallback(f); setDone(true); })
       .catch((e: Error) => { if (e.name !== "AbortError") setError(e.message); });
+    // Prefetch the mastery check while the lesson streams.
     if (!hasItems || tick > 0) {
-      getMastery({ conceptId, misconception: req.misconception, attempt: attempts })
+      getMastery({ conceptId, misconception: req.misconception, attempt: attempts, ...(pack ? { pack } : {}) })
         .then((r) => setMasteryItems(r.items)).catch(() => {});
     }
     return () => { ac.abort(); ran.current = false; };
@@ -105,28 +124,38 @@ export function LessonPlayer() {
   const retry = () => setTick((t) => t + 1);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 lg:grid-cols-[1fr_320px]">
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-3xl font-bold">{conceptName(concepts, conceptId)}</h2>
-          <Badge tone="indigo">Attempt {attempts}</Badge>
-          {fallback && <Badge tone="slate">offline lesson</Badge>}
-        </div>
-        {sections.length === 0 && !error && (
-          <div className="space-y-3"><p className="text-slate-400">Writing a lesson just for you…</p><Skeleton className="h-28" /><Skeleton className="h-20" /></div>
-        )}
-        {sections.map((s, i) => <SectionCard key={s.heading} s={s} streaming={!done && i === sections.length - 1} />)}
-        {error && <ErrorBox message={error} onRetry={retry} />}
-        {done && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <Button variant="success" className="w-full py-4 text-lg" onClick={() => setPhase("mastery")}>I&apos;m ready, check my mastery →</Button>
-          </motion.div>
-        )}
+    <Page>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-text-3">
+        <Label>Lesson</Label>
+        <span>· {gapNo} of {Math.max(1, gaps.length)} {gaps.length === 1 ? "gap" : "gaps"}</span>
+        <span>· attempt {attempts}</span>
+        {fallback && <Badge className="ml-auto">Offline lesson</Badge>}
       </div>
-      <aside className="order-first lg:order-none lg:sticky lg:top-20 lg:self-start">
-        <p className="mb-2 text-xs uppercase tracking-wider text-slate-500">Your concept map</p>
-        <ConceptGraph mode="static" className="h-56 lg:h-80" />
-      </aside>
-    </div>
+      <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em]">{conceptName(concepts, conceptId)}</h1>
+      {concept?.description && <p className="mt-1.5 text-[15px] text-text-2">{concept.description}</p>}
+      {attempts > 1 && <p className="mt-3 text-[13px] text-text-2">Trying a different explanation this time.</p>}
+
+      <div className="mt-6"><LearningPath compact /></div>
+
+      <article className="mt-10 space-y-9">
+        {sections.length === 0 && !error && (
+          <div className="space-y-3" aria-busy>
+            <p className="text-[13px] text-text-3">Writing a lesson for you…</p>
+            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-3.5 w-full" />
+            <Skeleton className="h-3.5 w-11/12" />
+            <Skeleton className="h-3.5 w-4/5" />
+          </div>
+        )}
+        {sections.map((s, i) => <LessonSection key={s.heading + i} s={s} interest={interest} streaming={!done && i === sections.length - 1} />)}
+      </article>
+
+      {error && <div className="mt-6"><ErrorBox message={error} onRetry={retry} /></div>}
+
+      <div className={clsx("mt-12 flex flex-wrap items-center gap-3 border-t border-border pt-6 transition-opacity duration-150", !done && "pointer-events-none opacity-40")}>
+        <Button size="lg" disabled={!done} onClick={() => setPhase("mastery")}>I&apos;m ready — check my understanding <IconArrowRight /></Button>
+        <span className="text-[13px] text-text-3">{done ? "3 questions · instant feedback" : "Finishing the lesson…"}</span>
+      </div>
+    </Page>
   );
 }

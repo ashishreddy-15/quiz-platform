@@ -1,97 +1,131 @@
 "use client";
 import { useMemo } from "react";
-import { PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Legend } from "recharts";
+import clsx from "clsx";
 import { useSession, type MasteryStatus } from "@/lib/store";
-import { ConceptGraph } from "./ConceptGraph";
-import { conceptName, useGraph } from "./hooks";
-import { Badge, Button, Card } from "./ui";
+import { conceptName, useConcepts } from "./hooks";
+import { IconArrowRight, IconFlag, IconPlus, IconRefresh } from "./icons";
+import { LearningPath } from "./LearningPath";
+import { Button, Label, Page, SectionTitle } from "./ui";
 
 const AFTER: Record<MasteryStatus, number> = { mastered: 1, learning: 0.5, needs_teacher: 0.3, gap: 0.2, unknown: 0.2 };
 
+function Bar({ v, tone }: { v: number; tone: "before" | "after" }) {
+  return (
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3">
+      <div className={clsx("h-full rounded-full", tone === "before" ? "bg-text-3" : v >= 0.8 ? "bg-success" : "bg-accent")} style={{ width: `${Math.max(0.04, v) * 100}%` }} />
+    </div>
+  );
+}
+
 export function Report() {
-  const subject = useSession((s) => s.subject);
+  const pack = useSession((s) => s.pack);
   const graded = useSession((s) => s.graded);
   const responses = useSession((s) => s.responses);
   const diagnosis = useSession((s) => s.diagnosis);
   const progress = useSession((s) => s.progress);
+  const interest = useSession((s) => s.interest);
   const reset = useSession((s) => s.reset);
-  const { concepts } = useGraph(subject);
+  const start = useSession((s) => s.start);
+  const setPack = useSession((s) => s.setPack);
+  const concepts = useConcepts();
 
   const stats = useMemo(() => {
     const tested = [...new Set(graded.flatMap((g) => g.concepts))];
     const wrongSet = new Set(graded.filter((g) => !g.correct).flatMap((g) => g.concepts));
-    const mastered = (id: string) => progress[id]?.status === "mastered";
-    const radar = tested.map((id) => {
-      const before = wrongSet.has(id) ? 0.2 : 1;
+    const gapIds = diagnosis?.root_gaps.map((g) => g.concept_id) ?? [];
+    const solid = (id: string) => progress[id]?.status === "mastered" || (tested.includes(id) && !wrongSet.has(id));
+    const rows = [...new Set([...gapIds, ...tested])].map((id) => {
+      const before = wrongSet.has(id) || gapIds.includes(id) ? 0.2 : 1;
       let after = before;
       if (progress[id]) after = AFTER[progress[id].status];
       else if (wrongSet.has(id)) {
-        const pre = concepts?.find((c) => c.id === id)?.prerequisites ?? [];
-        if (pre.length > 0 && pre.every(mastered)) after = 0.7;
+        const pre = concepts.find((c) => c.id === id)?.prerequisites ?? [];
+        if (pre.length > 0 && pre.every(solid)) after = 0.7;
       }
-      return { concept: conceptName(concepts, id), before: before * 100, after: after * 100 };
-    });
-    const gapIds = diagnosis?.root_gaps.map((g) => g.concept_id) ?? [];
+      return { id, name: conceptName(concepts, id), before, after };
+    }).sort((a, b) => (b.after - b.before) - (a.after - a.before));
     const flagged = Object.entries(progress).filter(([, p]) => p.status === "needs_teacher").map(([id]) => id);
-    const next = (concepts ?? []).filter((c) => !tested.includes(c.id) && !progress[c.id] && c.prerequisites.length > 0 && c.prerequisites.every(mastered));
-    return { radar, gapIds, flagged, next, masteredCount: gapIds.filter(mastered).length };
+    let next = concepts.filter((c) => !tested.includes(c.id) && !gapIds.includes(c.id) && c.prerequisites.length > 0 && c.prerequisites.every(solid));
+    if (next.length === 0) next = concepts.filter((c) => !tested.includes(c.id) && !gapIds.includes(c.id));
+    return { tested, rows, gapIds, flagged, next: next.slice(0, 4), mastered: gapIds.filter((id) => progress[id]?.status === "mastered").length };
   }, [graded, progress, diagnosis, concepts]);
 
-  const mins = Math.max(1, Math.round(responses.reduce((a, r) => a + r.timeMs, 0) / 60000));
-  const tiles = [
-    { label: "Gaps found", value: stats.gapIds.length, tone: "text-amber-300" },
-    { label: "Gaps mastered", value: `${stats.masteredCount}/${stats.gapIds.length}`, tone: "text-emerald-300" },
-    { label: "Quiz time", value: `${mins} min`, tone: "text-indigo-300" },
+  const totalMs = responses.reduce((a, r) => a + r.timeMs, 0);
+  const time = totalMs < 60000 ? `${Math.max(1, Math.round(totalMs / 1000))}s` : `${Math.round(totalMs / 60000)} min`;
+  const cells = [
+    { label: "Concepts tested", value: String(stats.tested.length) },
+    { label: "Gaps found", value: String(stats.gapIds.length) },
+    { label: "Mastered", value: `${stats.mastered}/${stats.gapIds.length}` },
+    { label: "Quiz time", value: time },
   ];
 
+  const retake = () => { if (pack) { start(pack.subject, interest); setPack(pack); } };
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h2 className="text-4xl font-extrabold">Your GapFinder report</h2>
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        {tiles.map((t) => (
-          <Card key={t.label} className="text-center">
-            <div className={`text-4xl font-extrabold ${t.tone}`}>{t.value}</div>
-            <div className="mt-1 text-sm text-slate-400">{t.label}</div>
-          </Card>
+    <Page>
+      <Label>Report{pack ? ` · ${pack.topic}` : ""}</Label>
+      <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em]">
+        {stats.gapIds.length === 0 ? "You're solid on this topic" : stats.mastered === stats.gapIds.length ? "Every gap closed" : "Here's where you landed"}
+      </h1>
+      <p className="mt-2 text-[15px] text-text-2">
+        {stats.gapIds.length === 0 ? "No missing ideas found. Try a harder level or a related topic."
+          : `You worked through ${stats.gapIds.length} ${stats.gapIds.length === 1 ? "idea" : "ideas"} underneath your mistakes.`}
+      </p>
+
+      <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
+        {cells.map((c) => (
+          <div key={c.label} className="bg-bg px-4 py-3.5">
+            <div className="text-[12px] text-text-3">{c.label}</div>
+            <div className="mt-1 text-[20px] font-semibold tabular-nums tracking-[-0.01em]">{c.value}</div>
+          </div>
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card>
-          <h3 className="font-semibold">Before vs. after, per concept tested</h3>
-          <div className="h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={stats.radar} outerRadius="70%">
-                <PolarGrid stroke="#334155" />
-                <PolarAngleAxis dataKey="concept" tick={{ fill: "#cbd5e1", fontSize: 11 }} />
-                <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Before" dataKey="before" stroke="#fb7185" fill="#fb7185" fillOpacity={0.25} />
-                <Radar name="After" dataKey="after" stroke="#34d399" fill="#34d399" fillOpacity={0.35} />
-                <Legend wrapperStyle={{ color: "#cbd5e1" }} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-        <div>
-          <ConceptGraph mode="static" className="h-[360px] lg:h-full lg:min-h-[360px]" />
-        </div>
+      {stats.rows.length > 0 && (
+        <section className="mt-12">
+          <SectionTitle aside={<span className="flex items-center gap-3"><span className="flex items-center gap-1.5"><span className="h-1.5 w-3 rounded-full bg-text-3" />Before</span><span className="flex items-center gap-1.5"><span className="h-1.5 w-3 rounded-full bg-success" />After</span></span>}>
+            Before → after
+          </SectionTitle>
+          <ul className="overflow-hidden rounded-lg border border-border">
+            {stats.rows.map((r) => (
+              <li key={r.id} className="grid grid-cols-1 gap-2 border-t border-border px-4 py-3 first:border-t-0 sm:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_76px] sm:items-center sm:gap-4">
+                <span className="truncate font-medium">{r.name}</span>
+                <div className="space-y-1.5"><Bar v={r.before} tone="before" /><Bar v={r.after} tone="after" /></div>
+                <span className="text-[13px] tabular-nums text-text-2 sm:text-right">{Math.round(r.before * 100)} → <span className="text-text">{Math.round(r.after * 100)}</span></span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section className="mt-12">
+        <SectionTitle aside="Foundations first">Your learning path</SectionTitle>
+        <LearningPath />
+      </section>
+
+      <div className="mt-12 grid gap-8 sm:grid-cols-2">
+        <section>
+          <SectionTitle>Flagged for teacher</SectionTitle>
+          {stats.flagged.length === 0 ? <p className="text-text-3">Nothing flagged.</p> : (
+            <ul className="space-y-1.5">
+              {stats.flagged.map((id) => <li key={id} className="flex items-center gap-2"><IconFlag className="text-warning" />{conceptName(concepts, id)}</li>)}
+            </ul>
+          )}
+        </section>
+        <section>
+          <SectionTitle>Recommended next</SectionTitle>
+          {stats.next.length === 0 ? <p className="text-text-3">Try a new topic to keep going.</p> : (
+            <ul className="space-y-1.5">
+              {stats.next.map((c) => <li key={c.id} className="flex items-center gap-2"><IconArrowRight className="text-text-3" />{c.name}</li>)}
+            </ul>
+          )}
+        </section>
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <Card>
-          <h3 className="font-semibold">Flagged for your teacher</h3>
-          {stats.flagged.length === 0 ? <p className="mt-2 text-slate-400">Nothing flagged. 🎯</p> : (
-            <ul className="mt-3 flex flex-wrap gap-2">{stats.flagged.map((id) => <Badge key={id} tone="amber">{conceptName(concepts, id)}</Badge>)}</ul>
-          )}
-        </Card>
-        <Card>
-          <h3 className="font-semibold">Recommended next</h3>
-          {stats.next.length === 0 ? <p className="mt-2 text-slate-400">Take another quiz to explore more concepts.</p> : (
-            <ul className="mt-3 flex flex-wrap gap-2">{stats.next.map((c) => <Badge key={c.id} tone="indigo">{c.name}</Badge>)}</ul>
-          )}
-        </Card>
+      <div className="mt-12 flex flex-wrap gap-3 border-t border-border pt-6">
+        <Button size="lg" onClick={reset}><IconPlus /> New topic</Button>
+        {pack && <Button size="lg" variant="secondary" onClick={retake}><IconRefresh /> Retake quiz</Button>}
       </div>
-      <div className="mt-8 text-center"><Button onClick={reset} className="px-10">Start over ↺</Button></div>
-    </div>
+    </Page>
   );
 }

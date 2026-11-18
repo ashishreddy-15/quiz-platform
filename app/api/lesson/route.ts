@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getConcept } from "@/lib/graph";
+import { graphFor } from "@/lib/graph";
 import { chatStream } from "@/lib/llm";
 import { lessonPrompt } from "@/lib/prompts";
 import { getFallbackLesson } from "@/lib/fallback";
+import { TopicPackSchema } from "@/lib/schema";
 import { parseBody, safeErr } from "@/lib/route-util";
 import type { LessonReq } from "@/lib/api-contract";
 
@@ -17,13 +18,14 @@ const Req = z.object({
   interest: z.string().max(60),
   attempt: z.number().int().min(1).max(10),
   previousAnalogy: z.string().max(1000).optional(),
+  pack: TopicPackSchema.optional(),
 });
 
 export async function POST(req: Request) {
   const p = await parseBody(req, Req);
   if (!p.ok) return p.res;
   const body: LessonReq = p.data;
-  const concept = getConcept(body.conceptId);
+  const concept = graphFor(body.pack).getConcept(body.conceptId);
   if (!concept) return NextResponse.json({ error: "Unknown concept" }, { status: 400 });
   const h = { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" };
   try {
@@ -32,6 +34,6 @@ export async function POST(req: Request) {
     return new Response(stream, { headers: h });
   } catch (e) {
     console.error("lesson failed:", safeErr(e));
-    return new Response(getFallbackLesson(body.conceptId, body.interest), { headers: { ...h, "x-fallback": "1" } });
+    return new Response(getFallbackLesson(body.conceptId, body.interest, concept), { headers: { ...h, "x-fallback": "1" } });
   }
 }

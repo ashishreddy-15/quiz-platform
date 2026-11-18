@@ -1,17 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
-import { getConcept, getQuestion } from "./graph";
+import { getConcept, getQuestion, graphFor } from "./graph";
 import { LESSON_HEADINGS } from "./api-contract";
-import type { MasteryItem, Question } from "./schema";
+import type { Concept, MasteryItem, Question, TopicPack } from "./schema";
 
 const dir = (...p: string[]) => path.join(process.cwd(), "data/fallback", ...p);
 
-export function getFallbackLesson(conceptId: string, interest: string): string {
+export function getFallbackLesson(conceptId: string, interest: string, concept?: Concept): string {
   try {
     const f = dir("lessons", `${conceptId}.md`);
     if (fs.existsSync(f)) return fs.readFileSync(f, "utf8");
   } catch {}
-  const c = getConcept(conceptId);
+  const c = concept ?? getConcept(conceptId);
   const name = c?.name ?? conceptId;
   const desc = c?.description ?? "";
   const [h1, h2, h3, h4, h5] = LESSON_HEADINGS;
@@ -27,7 +27,8 @@ function readBank(): Question[] {
   }
 }
 
-export function getFallbackMastery(conceptId: string): MasteryItem[] {
+export function getFallbackMastery(conceptId: string, pack?: TopicPack): MasteryItem[] {
+  if (pack) return packMastery(conceptId, pack);
   try {
     const f = dir("mastery", `${conceptId}.json`);
     if (fs.existsSync(f)) {
@@ -58,4 +59,20 @@ function anc(id: string): string[] {
     for (const p of c?.prerequisites ?? []) if (!seen.has(p)) { seen.add(p); out.push(p); stack.push(p); }
   }
   return out;
+}
+
+/** Fallback mastery for AI packs: the pack's own MCQs testing the concept (or its descendants), padded with others. */
+function packMastery(conceptId: string, pack: TopicPack): MasteryItem[] {
+  const g = graphFor(pack);
+  const mcq = pack.questions.filter((q) => q.type === "mcq" && q.options?.length === 4);
+  const direct = mcq.filter((q) => q.concepts.includes(conceptId));
+  const related = mcq.filter((q) => !direct.includes(q) && q.concepts.some((c) => g.ancestors(c).includes(conceptId)));
+  const rest = mcq.filter((q) => !direct.includes(q) && !related.includes(q));
+  const byDiff = (a: Question, b: Question) => a.difficulty - b.difficulty;
+  const pool = [...direct.sort(byDiff), ...related.sort(byDiff), ...rest.sort(byDiff)];
+  const kinds = ["recall", "application", "transfer"] as const;
+  return kinds.map((kind, i) => {
+    const q = pool[Math.min(i, pool.length - 1)];
+    return { kind, stem: q.stem, options: q.options!, answer: q.answer, explanation: q.explanation };
+  });
 }

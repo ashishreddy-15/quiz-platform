@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { conceptsForSubject, scoreGaps } from "@/lib/graph";
+import { conceptsForSubject, graphFor } from "@/lib/graph";
 import { chatJSON } from "@/lib/llm";
 import { diagnosePrompt } from "@/lib/prompts";
-import { DiagnosisSchema, GradedResponseSchema, SubjectSchema, type Concept, type Diagnosis, type GapCandidate, type GradedResponse } from "@/lib/schema";
+import { DiagnosisSchema, GradedResponseSchema, SubjectSchema, TopicPackSchema, type Concept, type Diagnosis, type GapCandidate, type GradedResponse } from "@/lib/schema";
 import { parseBody, safeErr } from "@/lib/route-util";
 import type { DiagnoseRes } from "@/lib/api-contract";
 
@@ -33,13 +33,14 @@ function heuristicDiagnosis(graded: GradedResponse[], heuristic: GapCandidate[],
 }
 
 export async function POST(req: Request) {
-  const p = await parseBody(req, z.object({ subject: SubjectSchema, graded: z.array(GradedResponseSchema).min(1).max(20) }));
+  const p = await parseBody(req, z.object({ subject: SubjectSchema, graded: z.array(GradedResponseSchema).min(1).max(20), pack: TopicPackSchema.optional() }));
   if (!p.ok) return p.res;
-  const { subject, graded } = p.data;
-  const graph = conceptsForSubject(subject);
+  const { subject, graded, pack } = p.data;
+  const g0 = graphFor(pack);
+  const graph = pack ? pack.concepts : conceptsForSubject(subject);
   const byId = new Map(graph.map((c) => [c.id, c]));
   const wrong = graded.filter((g) => !g.correct);
-  const heuristic = scoreGaps(graded);
+  const heuristic = g0.scoreGaps(graded);
 
   if (wrong.length === 0) {
     const d = heuristicDiagnosis(graded, [], byId);

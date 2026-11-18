@@ -2,28 +2,31 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { diagnose } from "@/lib/client-api";
 import { useSession } from "@/lib/store";
-import { ConceptGraph } from "./ConceptGraph";
-import { ErrorBox, Spinner } from "./ui";
+import { Checklist, ErrorBox, Label, Page } from "./ui";
 
-const MIN_MS = 3000; // let the graph animation play even if the LLM is fast
+const MIN_MS = 1500;
+const STEPS = ["Checking answers", "Tracing mistakes to prerequisites", "Picking where to start"];
 
 export function DiagnosingView() {
   const subject = useSession((s) => s.subject);
+  const pack = useSession((s) => s.pack);
   const graded = useSession((s) => s.graded);
   const setDiagnosis = useSession((s) => s.setDiagnosis);
   const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const started = useRef(false);
 
   const run = useCallback(async () => {
-    if (!subject) return;
-    setError(null);
+    setError(null); setDone(false);
     const t0 = Date.now();
     try {
-      const d = await diagnose(subject, graded);
-      const wait = Math.max(0, MIN_MS - (Date.now() - t0));
-      setTimeout(() => setDiagnosis(d), wait);
+      const d = await diagnose(subject ?? pack?.subject ?? "topic", graded, pack);
+      await new Promise((r) => setTimeout(r, Math.max(0, MIN_MS - (Date.now() - t0))));
+      setDone(true);
+      setTimeout(() => setDiagnosis(d), 300);
     } catch (e) { setError((e as Error).message); }
-  }, [subject, graded, setDiagnosis]);
+  }, [subject, pack, graded, setDiagnosis]);
 
   useEffect(() => {
     if (started.current) return;
@@ -31,14 +34,21 @@ export function DiagnosingView() {
     void run();
   }, [run]);
 
+  const correct = graded.filter((g) => g.correct).length;
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 text-center">
-      <h2 className="text-3xl font-bold">Analyzing your thinking…</h2>
-      <p className="mt-2 flex items-center justify-center gap-2 text-slate-400">
-        {!error && <Spinner />} Tracing each wrong answer back through the concepts it depends on
-      </p>
-      <div className="mt-6 text-left"><ConceptGraph mode="diagnosing" className="h-[460px]" /></div>
-      {error && <div className="mt-4 text-left"><ErrorBox message={error} onRetry={() => { started.current = true; void run(); }} /></div>}
-    </div>
+    <Page className="sm:pt-24">
+      <Label>Diagnosis</Label>
+      <h1 className="mt-2 text-[28px] font-semibold leading-tight tracking-[-0.02em]">Analyzing your answers</h1>
+      <p className="mt-1 text-text-2">{correct} of {graded.length} correct. Now finding the idea behind the misses.</p>
+      <div className="mt-8 rounded-lg border border-border bg-surface p-5">
+        <Checklist key={attempt} steps={STEPS} stepMs={1100} done={done} />
+      </div>
+      {error && (
+        <div className="mt-4">
+          <ErrorBox message={error} onRetry={() => { setAttempt((a) => a + 1); void run(); }} />
+        </div>
+      )}
+    </Page>
   );
 }
