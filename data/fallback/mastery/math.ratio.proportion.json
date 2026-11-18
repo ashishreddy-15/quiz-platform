@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "If 4 apples cost $12, how much do 7 apples cost?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$18",
+          "misconception": "confusing_scaling_factor"
+        },
+        {
+          "id": "b",
+          "text": "$24",
+          "misconception": "ignoring_units"
+        },
+        {
+          "id": "c",
+          "text": "$14",
+          "misconception": "mixing_up_ratio"
+        },
+        {
+          "id": "d",
+          "text": "$21",
+          "misconception": null
+        }
+      ],
+      "answer": "d",
+      "explanation": "The correct scaling factor is $12 ÷ 4 = $3 per apple, so $3 × 7 = $21. $18 mistakenly uses a factor of 1.5 instead of 1.75."
+    },
+    {
+      "kind": "application",
+      "stem": "A car travels 150 miles in 3 hours. How far will it travel in 5 hours?",
+      "options": [
+        {
+          "id": "a",
+          "text": "200 miles",
+          "misconception": "confusing_scaling_factor"
+        },
+        {
+          "id": "b",
+          "text": "300 miles",
+          "misconception": "ignoring_units"
+        },
+        {
+          "id": "c",
+          "text": "250 miles",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "225 miles",
+          "misconception": "mixing_up_ratio"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Unit rate is 150 ÷ 3 = 50 miles per hour; 50 × 5 = 250 miles. 200 miles uses a wrong scaling factor."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A recipe calls for 2 cups of flour for 4 servings. How many cups are needed for 10 servings?",
+      "options": [
+        {
+          "id": "a",
+          "text": "4 cups",
+          "misconception": "confusing_scaling_factor"
+        },
+        {
+          "id": "b",
+          "text": "6 cups",
+          "misconception": "ignoring_units"
+        },
+        {
+          "id": "c",
+          "text": "5 cups",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "7 cups",
+          "misconception": "mixing_up_ratio"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Scale 2 cups ÷ 4 servings = 0.5 cups per serving; 0.5 × 10 = 5 cups. 4 cups misapplies the scaling factor."
+    }
+  ]
+}

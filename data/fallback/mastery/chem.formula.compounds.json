@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "What does the subscript '2' in $\\mathrm{H_2O}$ represent?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The number of hydrogen atoms",
+          "misconception": "subscript_counts_first_element"
+        },
+        {
+          "id": "b",
+          "text": "The number of oxygen atoms",
+          "misconception": "subscript_counts_second_element"
+        },
+        {
+          "id": "c",
+          "text": "The number of water molecules",
+          "misconception": "subscript_counts_no_atoms"
+        },
+        {
+          "id": "answer",
+          "text": "The number of hydrogen atoms",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "The subscript 2 counts the number of hydrogen atoms; the distractor claiming it counts oxygen misinterprets the subscript’s association."
+    },
+    {
+      "kind": "application",
+      "stem": "In the formula $\\mathrm{CO_2}$, how many carbon atoms are present?",
+      "options": [
+        {
+          "id": "a",
+          "text": "One",
+          "misconception": "subscript_counts_first_element"
+        },
+        {
+          "id": "b",
+          "text": "Two",
+          "misconception": "subscript_counts_second_element"
+        },
+        {
+          "id": "c",
+          "text": "Three",
+          "misconception": "subscript_counts_no_atoms"
+        },
+        {
+          "id": "answer",
+          "text": "One",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "The subscript 1 (implied) indicates one carbon atom; the distractor suggesting two carbon atoms confuses the subscript with the oxygen count."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A chemist writes $\\mathrm{NaCl_3}$. How many chloride ions are present?",
+      "options": [
+        {
+          "id": "a",
+          "text": "One",
+          "misconception": "subscript_counts_first_element"
+        },
+        {
+          "id": "b",
+          "text": "Two",
+          "misconception": "subscript_counts_second_element"
+        },
+        {
+          "id": "c",
+          "text": "Four",
+          "misconception": "subscript_counts_no_atoms"
+        },
+        {
+          "id": "answer",
+          "text": "Three",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "The subscript 3 counts chloride ions; the distractor saying one chloride ion ignores the subscript’s role."
+    }
+  ]
+}

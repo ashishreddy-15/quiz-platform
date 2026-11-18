@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "What is the unit rate for 12 miles covered in 3 hours?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$4\\ \\text{miles per hour}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$3\\ \\text{miles per hour}$",
+          "misconception": "confusing_unit_rate_with_average_rate"
+        },
+        {
+          "id": "c",
+          "text": "$36\\ \\text{miles per hour}$",
+          "misconception": "ignoring_per_1"
+        },
+        {
+          "id": "d",
+          "text": "$1\\ \\text{mile per hour}$",
+          "misconception": "mixing_up_numerator_and_denominator"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Dividing 12 miles by 3 hours gives $4$ miles per hour. The distractor $3$ miles per hour confuses the unit rate with an average rate, while $36$ and $1$ arise from mis‑applying the per‑1 rule."
+    },
+    {
+      "kind": "application",
+      "stem": "If a car travels 240 km in 4 hours, what is its unit rate?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$60\\ \\text{km/h}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$240\\ \\text{km/h}$",
+          "misconception": "confusing_unit_rate_with_average_rate"
+        },
+        {
+          "id": "c",
+          "text": "$4\\ \\text{km/h}$",
+          "misconception": "mixing_up_numerator_and_denominator"
+        },
+        {
+          "id": "d",
+          "text": "$0.0167\\ \\text{km/h}$",
+          "misconception": "ignoring_per_1"
+        }
+      ],
+      "answer": "a",
+      "explanation": "The unit rate is $240\\text{ km}/4\\text{ h}=60\\text{ km/h}$. Option $240$ km/h misinterprets the total distance as a rate, while $4$ km/h and $0.0167$ km/h misapply the per‑1 concept."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A delivery truck can carry 5 pallets in 2 hours. What is its unit rate of pallets per hour?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$2.5\\ \\text{pallets per hour}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$10\\ \\text{pallets per hour}$",
+          "misconception": "confusing_unit_rate_with_average_rate"
+        },
+        {
+          "id": "c",
+          "text": "$0.4\\ \\text{pallets per hour}$",
+          "misconception": "mixing_up_numerator_and_denominator"
+        },
+        {
+          "id": "d",
+          "text": "$5\\ \\text{pallets per hour}$",
+          "misconception": "ignoring_per_1"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Unit rate is $5\\text{ pallets}/2\\text{ h}=2.5\\text{ pallets per hour}$. The $10$ pallets per hour option confuses the rate with a multiplied total, while $0.4$ and $5$ arise from mis‑interpreting the per‑1 rule."
+    }
+  ]
+}

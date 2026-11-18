@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "What is the acceleration of an object in free fall near Earth's surface, assuming no air resistance?",
+      "options": [
+        {
+          "id": "a",
+          "text": "9.8 m/s² downward",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "9.8 m/s² upward",
+          "misconception": "wrong_direction"
+        },
+        {
+          "id": "c",
+          "text": "9.8 m/s² downward, but depends on the object's mass",
+          "misconception": "mass_dependence"
+        },
+        {
+          "id": "d",
+          "text": "9.8 m/s² downward, but changes with the object's speed",
+          "misconception": "speed_changes"
+        }
+      ],
+      "answer": "a",
+      "explanation": "In free fall, acceleration is always 9.8 m/s² downward, independent of mass or velocity. The other options incorrectly change direction, depend on mass, or depend on speed."
+    },
+    {
+      "kind": "application",
+      "stem": "A ball is thrown upward with an initial velocity of 10 m/s. What is its acceleration while it rises?",
+      "options": [
+        {
+          "id": "a",
+          "text": "9.8 m/s² downward",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "9.8 m/s² upward",
+          "misconception": "wrong_direction"
+        },
+        {
+          "id": "c",
+          "text": "0 m/s²",
+          "misconception": "zero_acceleration"
+        },
+        {
+          "id": "d",
+          "text": "9.8 m/s² downward, but decreases as it rises",
+          "misconception": "speed_changes"
+        }
+      ],
+      "answer": "a",
+      "explanation": "The acceleration remains 9.8 m/s² downward throughout the ascent; it does not reverse or become zero. The other options incorrectly reverse direction, set acceleration to zero, or claim it decreases with height."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A skydiver jumps from a plane and before opening the parachute, what is his acceleration?",
+      "options": [
+        {
+          "id": "a",
+          "text": "9.8 m/s² downward",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "9.8 m/s² upward",
+          "misconception": "wrong_direction"
+        },
+        {
+          "id": "c",
+          "text": "0 m/s²",
+          "misconception": "zero_acceleration"
+        },
+        {
+          "id": "d",
+          "text": "9.8 m/s² downward, but slows due to air resistance",
+          "misconception": "terminal_velocity"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Before the parachute opens, the skydiver experiences a constant 9.8 m/s² downward acceleration. The other options incorrectly reverse direction, claim no acceleration, or include air resistance prematurely."
+    }
+  ]
+}

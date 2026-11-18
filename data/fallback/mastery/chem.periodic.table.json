@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "What is the atomic number of sodium?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$11$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$10$",
+          "misconception": "misunderstanding_atomic_number_vs_atomic_weight"
+        },
+        {
+          "id": "c",
+          "text": "$12$",
+          "misconception": "confusion_between_period_and_group"
+        },
+        {
+          "id": "d",
+          "text": "$13$",
+          "misconception": "common_confusion_about_periodic_table"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Sodium’s atomic number is 11. Option b confuses atomic number with atomic weight; option c mixes up period and group; option d reflects the student’s common confusion."
+    },
+    {
+      "kind": "application",
+      "stem": "Which element belongs to group 17 (halogens) and has atomic number 35?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Bromine",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "Iodine",
+          "misconception": "confusion_between_group_and_period"
+        },
+        {
+          "id": "c",
+          "text": "Chlorine",
+          "misconception": "misunderstanding_atomic_number_vs_atomic_weight"
+        },
+        {
+          "id": "d",
+          "text": "Fluorine",
+          "misconception": "common_confusion_about_periodic_table"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Bromine has atomic number 35 and is a halogen. Iodine’s atomic number is 53; Chlorine’s is 17; Fluorine’s is 9, all reflecting common misconceptions."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A chemist wants a highly reactive alkali metal for a new battery. Which element from group 1 is best?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Lithium",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "Sodium",
+          "misconception": "confusion_between_group_1_and_group_2"
+        },
+        {
+          "id": "c",
+          "text": "Potassium",
+          "misconception": "misunderstanding_reactivity_ranking"
+        },
+        {
+          "id": "d",
+          "text": "Calcium",
+          "misconception": "common_confusion_about_periodic_table"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Lithium (Z=3) is the most reactive alkali metal, ideal for batteries. Sodium and potassium are less reactive; calcium is an alkaline‑earth metal, not in group 1."
+    }
+  ]
+}
