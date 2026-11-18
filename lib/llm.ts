@@ -4,6 +4,22 @@ import Groq from "groq-sdk";
 import { z } from "zod";
 
 const MODEL = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+// Used when the primary model is rate-limited (429) — separate per-model quota on Groq.
+const FALLBACK_MODEL = process.env.GROQ_FALLBACK_MODEL || "openai/gpt-oss-20b";
+
+function isRateLimit(e: unknown) {
+  return typeof e === "object" && e !== null && (e as { status?: number }).status === 429;
+}
+/** Runs `fn(model)` on the primary model, retrying once on the fallback model if rate-limited. */
+async function withModel<T>(fn: (model: string) => Promise<T>): Promise<T> {
+  try {
+    return await fn(MODEL);
+  } catch (e) {
+    if (!isRateLimit(e) || FALLBACK_MODEL === MODEL) throw e;
+    console.warn(`[llm] ${MODEL} rate-limited; retrying on ${FALLBACK_MODEL}`);
+    return fn(FALLBACK_MODEL);
+  }
+}
 let client: Groq | null = null;
 function groq() {
   if (!process.env.GROQ_API_KEY) throw new Error("GROQ_API_KEY missing");
@@ -30,15 +46,15 @@ export async function chatJSON<T>(opts: {
   ];
   let lastErr: unknown;
   for (let attempt = 0; attempt < 2; attempt++) {
-    const res = await groq().chat.completions.create({
-      model: MODEL,
+    const res = await withModel((model) => groq().chat.completions.create({
+      model,
       messages,
       temperature: opts.temperature ?? 0.4,
       tools: [{ type: "function", function: { name: opts.toolName, description: opts.toolDescription, parameters } }],
       tool_choice: { type: "function", function: { name: opts.toolName } },
       // gpt-oss reasoning knob; ignored by other models
       ...({ reasoning_effort: "medium" } as object),
-    });
+    }));
     const call = res.choices[0]?.message?.tool_calls?.[0];
     const raw = call?.function?.arguments ?? res.choices[0]?.message?.content ?? "";
     try {
@@ -57,8 +73,8 @@ export async function chatJSON<T>(opts: {
 
 /** Streams plain text deltas as a UTF-8 ReadableStream. */
 export async function chatStream(opts: { system: string; user: string; temperature?: number }): Promise<ReadableStream<Uint8Array>> {
-  const stream = await groq().chat.completions.create({
-    model: MODEL,
+  const stream = await withModel((model) => groq().chat.completions.create({
+    model,
     stream: true,
     temperature: opts.temperature ?? 0.7,
     messages: [
@@ -66,7 +82,7 @@ export async function chatStream(opts: { system: string; user: string; temperatu
       { role: "user", content: opts.user },
     ],
     ...({ reasoning_effort: "low" } as object),
-  });
+  }));
   const enc = new TextEncoder();
   return new ReadableStream({
     async start(controller) {

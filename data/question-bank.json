@@ -1,0 +1,600 @@
+{
+  "version": 1,
+  "questions": [
+    {
+      "id": "math-1",
+      "subject": "math",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is 1/2 + 1/3?",
+      "concepts": [
+        "math.frac.add_sub"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "2/5",
+          "misconception": "adds_numerators_and_denominators"
+        },
+        {
+          "id": "b",
+          "text": "5/6",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "1/6",
+          "misconception": "multiplies_fractions_when_asked_to_add"
+        },
+        {
+          "id": "d",
+          "text": "2/6",
+          "misconception": "adds_numerators_multiplies_denominators"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Rewrite with a common denominator: 3/6 + 2/6 = 5/6. Add numerators only; the denominator (piece size) stays the same."
+    },
+    {
+      "id": "math-2",
+      "subject": "math",
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Which fraction equals 2/3?",
+      "concepts": [
+        "math.frac.equivalence"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "3/4",
+          "misconception": "treats_equivalence_as_adding_same_amount_to_both_parts"
+        },
+        {
+          "id": "b",
+          "text": "2/6",
+          "misconception": "changes_only_denominator_when_scaling"
+        },
+        {
+          "id": "c",
+          "text": "4/6",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "3/2",
+          "misconception": "inverts_fraction"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Multiply top and bottom by the same number: 2x2 / 3x2 = 4/6. Adding 1 to both parts (3/4) changes the value."
+    },
+    {
+      "id": "math-3",
+      "subject": "math",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which is greater: 3/8 or 3/5?",
+      "concepts": [
+        "math.frac.compare"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "3/8",
+          "misconception": "thinks_larger_denominator_means_larger_fraction"
+        },
+        {
+          "id": "b",
+          "text": "They are equal",
+          "misconception": "compares_numerators_only"
+        },
+        {
+          "id": "c",
+          "text": "You cannot tell without converting to decimals",
+          "misconception": "believes_fractions_cannot_be_compared_without_decimals"
+        },
+        {
+          "id": "d",
+          "text": "3/5",
+          "misconception": null
+        }
+      ],
+      "answer": "d",
+      "explanation": "Same number of pieces (3), but fifths are bigger than eighths, so 3/5 > 3/8."
+    },
+    {
+      "id": "math-4",
+      "subject": "math",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is 1/2 x 1/3?",
+      "concepts": [
+        "math.frac.multiply"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "1/6",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "2/5",
+          "misconception": "adds_numerators_and_denominators"
+        },
+        {
+          "id": "c",
+          "text": "5/6",
+          "misconception": "adds_fractions_when_asked_to_multiply"
+        },
+        {
+          "id": "d",
+          "text": "2/6",
+          "misconception": "adds_numerators_multiplies_denominators"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Multiply numerators (1x1=1) and denominators (2x3=6): 1/6. A half of a third is one sixth."
+    },
+    {
+      "id": "math-5",
+      "subject": "math",
+      "type": "short",
+      "difficulty": 2,
+      "stem": "Write 6/8 in simplest form.",
+      "concepts": [
+        "math.frac.equivalence"
+      ],
+      "answer": "3/4",
+      "accepted_patterns": [
+        "^\\s*3\\s*/\\s*4\\s*$",
+        "three\\s*(-|\\s)?fourths?",
+        "^\\s*0?\\.75\\s*$"
+      ],
+      "common_wrong": [
+        {
+          "pattern": "^\\s*6\\s*/\\s*8\\s*$",
+          "misconception": "does_not_simplify_fraction"
+        },
+        {
+          "pattern": "^\\s*(3\\s*/\\s*5|4\\s*/\\s*6|5\\s*/\\s*7)\\s*$",
+          "misconception": "treats_equivalence_as_adding_same_amount_to_both_parts"
+        }
+      ],
+      "rubric": "Correct if the answer is 3/4 (or an obviously equivalent form such as 0.75). 6/8 unchanged is not simplified. Subtracting the same number from top and bottom is the additive misconception.",
+      "explanation": "Divide numerator and denominator by their common factor 2: 6/2 / 8/2 = 3/4."
+    },
+    {
+      "id": "math-6",
+      "subject": "math",
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A recipe uses 2 cups of flour for every 3 cups of milk. How much flour is needed for 9 cups of milk?",
+      "concepts": [
+        "math.ratio.proportion"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "8 cups",
+          "misconception": "treats_equivalence_as_adding_same_amount_to_both_parts"
+        },
+        {
+          "id": "b",
+          "text": "13.5 cups",
+          "misconception": "inverts_ratio_when_scaling"
+        },
+        {
+          "id": "c",
+          "text": "6 cups",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "4.5 cups",
+          "misconception": "divides_instead_of_multiplying_scale_factor"
+        }
+      ],
+      "answer": "c",
+      "explanation": "9 cups is 3 times 3 cups, so flour is 3 times 2 = 6 cups. Adding 6 to both (8) breaks the ratio."
+    },
+    {
+      "id": "phys-1",
+      "subject": "physics",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A ball rolls up a ramp, stops for an instant at the top, then rolls back down. At that instant, its acceleration is:",
+      "concepts": [
+        "phys.kin.acceleration"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Zero, because its velocity is zero",
+          "misconception": "conflates_zero_velocity_with_zero_acceleration"
+        },
+        {
+          "id": "b",
+          "text": "Not zero, pointing down the ramp",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "Pointing up the ramp, the way it was moving",
+          "misconception": "thinks_acceleration_points_in_direction_of_motion"
+        },
+        {
+          "id": "d",
+          "text": "Equal to its speed just before stopping",
+          "misconception": "confuses_acceleration_with_velocity"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Its velocity is changing from up-ramp to down-ramp, so acceleration is nonzero (down the ramp) even at the instant velocity is zero."
+    },
+    {
+      "id": "phys-2",
+      "subject": "physics",
+      "type": "short",
+      "difficulty": 2,
+      "stem": "A ball is thrown straight up. At its highest point, what is its acceleration? (Ignore air resistance.)",
+      "concepts": [
+        "phys.kin.free_fall"
+      ],
+      "answer": "About 9.8 m/s^2 downward (gravity)",
+      "accepted_patterns": [
+        "9\\.?8",
+        "\\b10\\s*m",
+        "down",
+        "\\bg\\b",
+        "gravity"
+      ],
+      "common_wrong": [
+        {
+          "pattern": "^\\W*(0|zero|none|nothing|no acceleration)\\b",
+          "misconception": "conflates_zero_velocity_with_zero_acceleration"
+        },
+        {
+          "pattern": "\\b(up|upward)\\b",
+          "misconception": "thinks_acceleration_points_in_direction_of_motion"
+        }
+      ],
+      "rubric": "Correct: 9.8 m/s^2 (about 10) directed downward, due to gravity. Zero is the classic velocity/acceleration conflation.",
+      "explanation": "At the top the velocity is momentarily zero, but gravity still pulls down, so acceleration is 9.8 m/s^2 downward the entire flight."
+    },
+    {
+      "id": "phys-3",
+      "subject": "physics",
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "You drop a 1 kg ball and a 5 kg ball from the same height at the same time. Ignoring air resistance, which hits the ground first?",
+      "concepts": [
+        "phys.kin.free_fall"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "The 5 kg ball",
+          "misconception": "thinks_heavier_objects_fall_faster"
+        },
+        {
+          "id": "b",
+          "text": "The 1 kg ball",
+          "misconception": "thinks_lighter_objects_fall_faster"
+        },
+        {
+          "id": "c",
+          "text": "The 5 kg ball, but only by a tiny amount",
+          "misconception": "thinks_heavier_objects_fall_faster"
+        },
+        {
+          "id": "d",
+          "text": "They land together",
+          "misconception": null
+        }
+      ],
+      "answer": "d",
+      "explanation": "Gravity pulls harder on the heavier ball but it also has more inertia; the two effects cancel, so both accelerate at 9.8 m/s^2."
+    },
+    {
+      "id": "phys-4",
+      "subject": "physics",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "A hockey puck slides at constant velocity across frictionless ice. What is the net force on it?",
+      "concepts": [
+        "phys.force.newton1"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Zero",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "A constant forward force",
+          "misconception": "thinks_motion_requires_a_net_force"
+        },
+        {
+          "id": "c",
+          "text": "A forward force that slowly fades",
+          "misconception": "thinks_force_is_used_up_as_object_moves"
+        },
+        {
+          "id": "d",
+          "text": "A forward force proportional to its speed",
+          "misconception": "thinks_force_is_proportional_to_velocity"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Constant velocity means zero acceleration, so net force is zero. Motion does not need a force; changing motion does."
+    },
+    {
+      "id": "phys-5",
+      "subject": "physics",
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "A net force of 10 N acts on a 2 kg object. What is its acceleration?",
+      "concepts": [
+        "phys.force.newton2"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "20 m/s^2",
+          "misconception": "multiplies_instead_of_dividing_force_by_mass"
+        },
+        {
+          "id": "b",
+          "text": "5 m/s^2",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "0.2 m/s^2",
+          "misconception": "inverts_newtons_second_law"
+        },
+        {
+          "id": "d",
+          "text": "12 m/s^2",
+          "misconception": "adds_force_and_mass"
+        }
+      ],
+      "answer": "b",
+      "explanation": "a = F/m = 10 / 2 = 5 m/s^2."
+    },
+    {
+      "id": "phys-6",
+      "subject": "physics",
+      "type": "mcq",
+      "difficulty": 3,
+      "stem": "The Earth pulls down on a book with a 20 N force. What force does the book exert on the Earth?",
+      "concepts": [
+        "phys.force.newton3"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Zero, since the book is so small",
+          "misconception": "thinks_only_the_larger_object_exerts_force"
+        },
+        {
+          "id": "b",
+          "text": "Much less than 20 N",
+          "misconception": "thinks_bigger_object_exerts_bigger_force"
+        },
+        {
+          "id": "c",
+          "text": "20 N, directed upward",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "20 N, which cancels the pull so the book stays still",
+          "misconception": "thinks_action_reaction_pairs_cancel"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Third-law pairs are equal and opposite and act on different objects, so they never cancel each other; the table's force on the book balances Earth's pull."
+    },
+    {
+      "id": "chem-1",
+      "subject": "chemistry",
+      "type": "mcq",
+      "difficulty": 1,
+      "stem": "Sodium has atomic number 11 and mass number 23. How many neutrons does a sodium atom have?",
+      "concepts": [
+        "chem.atom.atomic_mass_number"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "23",
+          "misconception": "confuses_mass_number_with_atomic_number"
+        },
+        {
+          "id": "b",
+          "text": "12",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "34",
+          "misconception": "adds_atomic_number_to_mass_number"
+        },
+        {
+          "id": "d",
+          "text": "11",
+          "misconception": "thinks_neutrons_equal_protons"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Neutrons = mass number - atomic number = 23 - 11 = 12."
+    },
+    {
+      "id": "chem-2",
+      "subject": "chemistry",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "An atom has 17 protons and 18 electrons. What is its charge?",
+      "concepts": [
+        "chem.atom.isotopes_ions"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "1+",
+          "misconception": "reverses_sign_of_ion_charge"
+        },
+        {
+          "id": "b",
+          "text": "Neutral (0)",
+          "misconception": "ignores_electron_proton_difference"
+        },
+        {
+          "id": "c",
+          "text": "1-",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "17-",
+          "misconception": "confuses_charge_with_proton_count"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Charge = protons - electrons = 17 - 18 = -1. Extra electrons make a negative ion."
+    },
+    {
+      "id": "chem-3",
+      "subject": "chemistry",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "What is the molar mass of H2O? (H = 1 g/mol, O = 16 g/mol)",
+      "concepts": [
+        "chem.mole.molar_mass"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "17 g/mol",
+          "misconception": "ignores_subscripts_when_computing_molar_mass"
+        },
+        {
+          "id": "b",
+          "text": "16 g/mol",
+          "misconception": "uses_only_heaviest_atom_for_molar_mass"
+        },
+        {
+          "id": "c",
+          "text": "3 g/mol",
+          "misconception": "counts_atoms_instead_of_summing_masses"
+        },
+        {
+          "id": "d",
+          "text": "18 g/mol",
+          "misconception": null
+        }
+      ],
+      "answer": "d",
+      "explanation": "Two hydrogens and one oxygen: 2(1) + 16 = 18 g/mol."
+    },
+    {
+      "id": "chem-4",
+      "subject": "chemistry",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "How many atoms are in 1 mole of carbon?",
+      "concepts": [
+        "chem.mole.concept"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "6.02 x 10^23",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "12",
+          "misconception": "confuses_molar_mass_with_particle_count"
+        },
+        {
+          "id": "c",
+          "text": "1",
+          "misconception": "thinks_a_mole_is_one_particle"
+        },
+        {
+          "id": "d",
+          "text": "6.02 x 10^-23",
+          "misconception": "misplaces_sign_in_avogadro_exponent"
+        }
+      ],
+      "answer": "a",
+      "explanation": "A mole is defined as 6.02 x 10^23 particles; 12 g is the mass of a mole of carbon, not the count."
+    },
+    {
+      "id": "chem-5",
+      "subject": "chemistry",
+      "type": "mcq",
+      "difficulty": 2,
+      "stem": "Which is the correctly balanced equation for hydrogen reacting with oxygen to make water?",
+      "concepts": [
+        "chem.reaction.balancing"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "H2 + O2 -> H2O",
+          "misconception": "ignores_coefficients_and_mole_ratios"
+        },
+        {
+          "id": "b",
+          "text": "2 H2 + O2 -> 2 H2O",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "2 H2 + 2 O2 -> 2 H2O",
+          "misconception": "balances_only_one_element"
+        },
+        {
+          "id": "d",
+          "text": "H2 + O -> H2O",
+          "misconception": "changes_subscripts_instead_of_adding_coefficients"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Four H and two O atoms on each side. Fix balance with coefficients, never by changing subscripts (O2 -> O would be a different substance)."
+    },
+    {
+      "id": "chem-6",
+      "subject": "chemistry",
+      "type": "short",
+      "difficulty": 3,
+      "stem": "In the reaction 2 H2 + O2 -> 2 H2O, how many moles of water form from 3 moles of O2? (Answer with a number.)",
+      "concepts": [
+        "chem.reaction.stoichiometry"
+      ],
+      "answer": "6 mol",
+      "accepted_patterns": [
+        "^\\s*6(\\.0+)?\\b",
+        "six"
+      ],
+      "common_wrong": [
+        {
+          "pattern": "^\\s*3(\\.0+)?\\b",
+          "misconception": "ignores_coefficients_and_mole_ratios"
+        },
+        {
+          "pattern": "^\\s*1\\.5\\b",
+          "misconception": "inverts_mole_ratio"
+        }
+      ],
+      "rubric": "Correct: 6 mol. The O2:H2O mole ratio is 1:2. Answering 3 ignores the coefficients; 1.5 inverts the ratio.",
+      "explanation": "The coefficients give 1 mol O2 -> 2 mol H2O, so 3 mol O2 -> 6 mol H2O."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "A ball is thrown straight up and reaches its highest point. At that instant its velocity is 0 m/s. What is its acceleration?",
+      "options": [
+        {
+          "id": "a",
+          "text": "0 m/s²",
+          "misconception": "zero_velocity_implies_zero_acceleration"
+        },
+        {
+          "id": "b",
+          "text": "+9.8 m/s² upward",
+          "misconception": "sign_confusion_upward"
+        },
+        {
+          "id": "c",
+          "text": "-9.8 m/s² downward",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "5 m/s² downward",
+          "misconception": "incorrect_magnitude"
+        }
+      ],
+      "answer": "c",
+      "explanation": "Even though the velocity is momentarily zero, gravity still provides a downward acceleration of $9.8\\,\\text{m/s}^2$. Option a mistakenly equates zero velocity with zero acceleration."
+    },
+    {
+      "kind": "application",
+      "stem": "A ball is released from rest and begins to fall straight down. Immediately after release, what is its acceleration?",
+      "options": [
+        {
+          "id": "a",
+          "text": "0 m/s²",
+          "misconception": "zero_velocity_implies_zero_acceleration"
+        },
+        {
+          "id": "b",
+          "text": "9.8 m/s² upward",
+          "misconception": "sign_confusion_upward"
+        },
+        {
+          "id": "c",
+          "text": "9.8 m/s² downward",
+          "misconception": null
+        },
+        {
+          "id": "d",
+          "text": "5 m/s² downward",
+          "misconception": "incorrect_magnitude"
+        }
+      ],
+      "answer": "c",
+      "explanation": "The ball’s velocity starts at 0 m/s, but the gravitational force gives it a constant downward acceleration of $9.8\\,\\text{m/s}^2$. Option a confuses zero velocity with zero acceleration."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A cyclist is stopped at a red light. When the light turns green, she presses the pedals, producing a forward acceleration of $2\\,\\text{m/s}^2$. At the exact moment she starts moving, what is her acceleration?",
+      "options": [
+        {
+          "id": "a",
+          "text": "0 m/s²",
+          "misconception": "zero_velocity_implies_zero_acceleration"
+        },
+        {
+          "id": "b",
+          "text": "2 m/s² forward",
+          "misconception": null
+        },
+        {
+          "id": "c",
+          "text": "-2 m/s² (backward)",
+          "misconception": "sign_confusion_backward"
+        },
+        {
+          "id": "d",
+          "text": "0.5 m/s² forward",
+          "misconception": "incorrect_magnitude"
+        }
+      ],
+      "answer": "b",
+      "explanation": "Even though the cyclist’s velocity is initially zero, the pedaling force creates a forward acceleration of $2\\,\\text{m/s}^2$. Option a incorrectly assumes no acceleration when velocity is zero."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "Which fraction is greater?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\frac{1}{3}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$\\frac{1}{4}$",
+          "misconception": "bigger_denominator_larger"
+        },
+        {
+          "id": "c",
+          "text": "$\\frac{2}{6}$",
+          "misconception": "numerator_ignores_denominator"
+        },
+        {
+          "id": "d",
+          "text": "$\\frac{3}{12}$",
+          "misconception": "cross_multiplication_error"
+        }
+      ],
+      "answer": "a",
+      "explanation": "1/3 is larger because a smaller denominator means larger pieces; 1/4 has a larger denominator, making it smaller."
+    },
+    {
+      "kind": "application",
+      "stem": "Which of the following fractions is larger?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\frac{5}{8}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$\\frac{4}{9}$",
+          "misconception": "bigger_denominator_larger"
+        },
+        {
+          "id": "c",
+          "text": "$\\frac{6}{12}$",
+          "misconception": "numerator_ignores_denominator"
+        },
+        {
+          "id": "d",
+          "text": "$\\frac{3}{7}$",
+          "misconception": "cross_multiplication_error"
+        }
+      ],
+      "answer": "a",
+      "explanation": "5/8 (0.625) is larger than the other choices; the larger denominator of 9 in 4/9 makes it smaller, not larger."
+    },
+    {
+      "kind": "transfer",
+      "stem": "Pizza A is cut into 5 equal slices and you eat 2 slices. Pizza B is cut into 8 equal slices and you eat 3 slices. Which portion is larger?",
+      "options": [
+        {
+          "id": "a",
+          "text": "The portion from Pizza A",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "The portion from Pizza B",
+          "misconception": "bigger_denominator_larger"
+        },
+        {
+          "id": "c",
+          "text": "Both portions are equal",
+          "misconception": "same_numerator_larger_denominator"
+        },
+        {
+          "id": "d",
+          "text": "Cannot determine without a calculator",
+          "misconception": "cross_multiplication_error"
+        }
+      ],
+      "answer": "a",
+      "explanation": "2/5 = 0.40 is larger than 3/8 = 0.375; a smaller denominator (5 vs 8) gives larger pieces when numerators are comparable."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "How many individual particles are there in exactly one mole?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$6.02 \\times 10^{23}$ particles",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$6.02 \\times 10^{20}$ particles",
+          "misconception": "mole_is_too_small"
+        },
+        {
+          "id": "c",
+          "text": "$6.02 \\times 10^{24}$ particles",
+          "misconception": "mole_is_too_large"
+        },
+        {
+          "id": "d",
+          "text": "1 gram of a substance",
+          "misconception": "mole_is_grams"
+        }
+      ],
+      "answer": "a",
+      "explanation": "One mole is defined as $6.02 \\times 10^{23}$ particles; the other choices misstate the magnitude or confuse moles with mass."
+    },
+    {
+      "kind": "application",
+      "stem": "A sample contains $2.5 \\times 10^{24}$ atoms. How many moles of atoms are present?",
+      "options": [
+        {
+          "id": "a",
+          "text": "approximately $4.15$ moles",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "approximately $0.415$ moles",
+          "misconception": "misplace_decimal"
+        },
+        {
+          "id": "c",
+          "text": "approximately $41.5$ moles",
+          "misconception": "misplace_decimal_reverse"
+        },
+        {
+          "id": "d",
+          "text": "approximately $2.5$ moles",
+          "misconception": "mole_is_grams"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Divide the number of atoms by Avogadro's number: $2.5\\times10^{24} / 6.02\\times10^{23} \\approx 4.15$ moles; the other options misplace the decimal or treat moles as grams."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A bakery recipe calls for 0.5 mole of sugar crystals. Roughly how many individual sugar crystals are used?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$3.0 \\times 10^{23}$ crystals",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$3.0 \\times 10^{22}$ crystals",
+          "misconception": "mole_is_grams"
+        },
+        {
+          "id": "c",
+          "text": "$6.0 \\times 10^{23}$ crystals",
+          "misconception": "ignore_fraction"
+        },
+        {
+          "id": "d",
+          "text": "$5.0 \\times 10^{23}$ crystals",
+          "misconception": "mole_is_one_to_one"
+        }
+      ],
+      "answer": "a",
+      "explanation": "0.5 mole × $6.02\\times10^{23}$ = $3.01\\times10^{23}$ crystals; the other choices either drop the factor of 0.5 or confuse moles with mass."
+    }
+  ]
+}

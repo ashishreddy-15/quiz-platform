@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "Which of the following is equivalent to the ratio $4:6$?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$2:3$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$5:7$",
+          "misconception": "adding_same_number"
+        },
+        {
+          "id": "c",
+          "text": "$4:9$",
+          "misconception": "cross_multiplication_error"
+        },
+        {
+          "id": "d",
+          "text": "$6:4$",
+          "misconception": "inverse_ratio"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Dividing both terms by their GCD 2 gives $2:3$, which is the only equivalent ratio among the choices; the other options change the relationship."
+    },
+    {
+      "kind": "application",
+      "stem": "A recipe calls for 3 cups of flour to 5 cups of sugar. To keep the same proportion, how many cups of sugar are needed if you use 9 cups of flour?",
+      "options": [
+        {
+          "id": "a",
+          "text": "15 cups",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "12 cups",
+          "misconception": "adding_same_number"
+        },
+        {
+          "id": "c",
+          "text": "10 cups",
+          "misconception": "inverse_ratio"
+        },
+        {
+          "id": "d",
+          "text": "18 cups",
+          "misconception": "multiplying_both_by_wrong_factor"
+        }
+      ],
+      "answer": "a",
+      "explanation": "The ratio $3:5$ simplifies to $9:15$ when the flour is tripled, so 15 cups of sugar are required; other answers misapply the ratio."
+    },
+    {
+      "kind": "transfer",
+      "stem": "On a map, 1 cm represents 40 km. If a road on the map measures 2.5 cm, what is the actual length of the road?",
+      "options": [
+        {
+          "id": "a",
+          "text": "100 km",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "80 km",
+          "misconception": "adding_same_number"
+        },
+        {
+          "id": "c",
+          "text": "120 km",
+          "misconception": "scale_misinterpretation"
+        },
+        {
+          "id": "d",
+          "text": "160 km",
+          "misconception": "multiplying_wrong_factor"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Multiplying the map distance by the scale factor $40\\,\\text{km/cm}$ gives $2.5\\times40 = 100\\,$km; other options misuse addition or the scale factor."
+    }
+  ]
+}

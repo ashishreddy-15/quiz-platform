@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "Which fraction is equivalent to $\\frac{2}{5}$?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\frac{4}{10}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$\\frac{3}{5}$",
+          "misconception": "multiply_numerator_only"
+        },
+        {
+          "id": "c",
+          "text": "$\\frac{3}{7}$",
+          "misconception": "add_same_amount_mistake"
+        },
+        {
+          "id": "d",
+          "text": "$\\frac{5}{2}$",
+          "misconception": "invert_fraction"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Multiplying numerator and denominator by the same number (2) gives $\\frac{4}{10}$, which is equal to $\\frac{2}{5}$. Adding the same amount or changing only one part does not preserve equality."
+    },
+    {
+      "kind": "application",
+      "stem": "A recipe calls for $\\frac{3}{8}$ cup of oil. To keep the same proportion with a denominator of 24, which fraction should be used?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\frac{9}{24}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$\\frac{6}{24}$",
+          "misconception": "multiply_numerator_only"
+        },
+        {
+          "id": "c",
+          "text": "$\\frac{5}{11}$",
+          "misconception": "add_same_amount_mistake"
+        },
+        {
+          "id": "d",
+          "text": "$\\frac{24}{9}$",
+          "misconception": "invert_fraction"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Multiplying both numerator and denominator by 3 gives $\\frac{9}{24}$, an equivalent fraction. Changing only the numerator or adding a constant would alter the amount."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A classroom has $\\frac{5}{9}$ of its seats occupied. The school reports occupancy with denominator 27. What fraction should be reported?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$\\frac{15}{27}$",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$\\frac{10}{27}$",
+          "misconception": "multiply_numerator_only"
+        },
+        {
+          "id": "c",
+          "text": "$\\frac{12}{27}$",
+          "misconception": "add_same_amount_mistake"
+        },
+        {
+          "id": "d",
+          "text": "$\\frac{27}{15}$",
+          "misconception": "invert_fraction"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Multiplying numerator and denominator by 3 yields $\\frac{15}{27}$, which represents the same proportion. Adding the same number or swapping numerator and denominator would give an incorrect report."
+    }
+  ]
+}

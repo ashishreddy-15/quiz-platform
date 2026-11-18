@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "According to Newton's first law, what happens to an object moving at constant velocity when the net external force is zero?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It will eventually come to rest.",
+          "misconception": "force_needed_to_keep_moving"
+        },
+        {
+          "id": "b",
+          "text": "It will speed up.",
+          "misconception": "force_needed_to_speed_up"
+        },
+        {
+          "id": "c",
+          "text": "It will change direction.",
+          "misconception": "force_needed_to_change_direction"
+        },
+        {
+          "id": "answer",
+          "text": "It continues moving at the same speed and direction.",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "With zero net force, the object continues at the same speed and direction; a force is not required to keep it moving."
+    },
+    {
+      "kind": "application",
+      "stem": "A hockey puck slides on a perfectly frictionless ice surface. No external forces act on it after the initial push. What will happen to its motion?",
+      "options": [
+        {
+          "id": "a",
+          "text": "It will gradually slow down because a force is needed to keep it moving.",
+          "misconception": "force_needed_to_keep_speed"
+        },
+        {
+          "id": "b",
+          "text": "It will accelerate because its inertia pushes it forward.",
+          "misconception": "inertia_causes_acceleration"
+        },
+        {
+          "id": "c",
+          "text": "It will stop due to air resistance.",
+          "misconception": "air_resistance_unaccounted"
+        },
+        {
+          "id": "answer",
+          "text": "It will slide at a constant speed in a straight line.",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "With no net force, the puck maintains its velocity; it neither slows down nor speeds up."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A deep‑space probe drifts far from any planet with its engines turned off, experiencing essentially zero net external force. How will its velocity change over time?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Its speed will slowly decrease because a force is required to maintain motion.",
+          "misconception": "force_needed_to_maintain_speed"
+        },
+        {
+          "id": "b",
+          "text": "Its speed will increase as a result of its inertia.",
+          "misconception": "inertia_increases_speed"
+        },
+        {
+          "id": "c",
+          "text": "Its velocity will oscillate due to unseen cosmic forces.",
+          "misconception": "cosmic_forces_unconsidered"
+        },
+        {
+          "id": "answer",
+          "text": "Its velocity will stay constant.",
+          "misconception": null
+        }
+      ],
+      "answer": "answer",
+      "explanation": "In the absence of net force, the probe’s velocity remains unchanged; it coasts indefinitely at the same speed and direction."
+    }
+  ]
+}

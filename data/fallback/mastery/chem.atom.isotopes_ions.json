@@ -1,0 +1,88 @@
+{
+  "items": [
+    {
+      "kind": "recall",
+      "stem": "Which statement correctly describes isotopes?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Isotopes of an element have the same number of protons but different numbers of neutrons.",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "Isotopes have the same number of electrons but different numbers of protons.",
+          "misconception": "confusing_isotopes_and_ions"
+        },
+        {
+          "id": "c",
+          "text": "Isotopes differ in the number of protons while having the same number of neutrons.",
+          "misconception": "wrong_proton_count"
+        },
+        {
+          "id": "d",
+          "text": "Isotopes are atoms that have gained or lost electrons, giving them a charge.",
+          "misconception": "ion_misconception"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Isotopes share the same proton count (same element) and differ only in neutron number; the other choices mix up electrons or proton differences."
+    },
+    {
+      "kind": "application",
+      "stem": "Element Y has atomic number 15. Two atoms of Y have mass numbers 31 and 33. Which description is correct?",
+      "options": [
+        {
+          "id": "a",
+          "text": "Both atoms are isotopes of element Y.",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "The atom with mass number 31 is an isotope, and the one with 33 is an ion.",
+          "misconception": "confusing_isotopes_and_ions"
+        },
+        {
+          "id": "c",
+          "text": "Mass number does not affect isotopic identity, so neither is an isotope.",
+          "misconception": "mass_number_irrelevant"
+        },
+        {
+          "id": "d",
+          "text": "Only the atom with mass number 33 is an isotope because it has more neutrons.",
+          "misconception": "wrong_neutron_count"
+        }
+      ],
+      "answer": "a",
+      "explanation": "Atoms with the same proton number but different mass numbers are isotopes; ions involve a gain or loss of electrons, not a change in mass number."
+    },
+    {
+      "kind": "transfer",
+      "stem": "A museum displays a sample labeled $^{235}\\text{U}$ and a sodium sample labeled $Na^{+}$. Which pairing correctly identifies each as an isotope or an ion?",
+      "options": [
+        {
+          "id": "a",
+          "text": "$^{235}\\text{U}$ is an isotope of uranium; $Na^{+}$ is a sodium ion.",
+          "misconception": null
+        },
+        {
+          "id": "b",
+          "text": "$^{235}\\text{U}$ is a sodium ion; $Na^{+}$ is an isotope of sodium.",
+          "misconception": "confusing_isotopes_and_ions"
+        },
+        {
+          "id": "c",
+          "text": "$^{235}\\text{U}$ is an ion because it has a charge; $Na^{+}$ is an isotope because its mass number differs from $Na$.",
+          "misconception": "wrong_charge_assignment"
+        },
+        {
+          "id": "d",
+          "text": "$^{235}\\text{U}$ is an isotope; $Na^{+}$ is a neutral atom.",
+          "misconception": "incorrect_ion_state"
+        }
+      ],
+      "answer": "a",
+      "explanation": "$^{235}\\text{U}$ differs from other uranium atoms only in neutron count (an isotope), while $Na^{+}$ has lost an electron, giving it a positive charge (an ion)."
+    }
+  ]
+}

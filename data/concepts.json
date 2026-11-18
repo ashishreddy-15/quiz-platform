@@ -1,0 +1,287 @@
+{
+  "subjects": [
+    "math",
+    "physics",
+    "chemistry"
+  ],
+  "concepts": [
+    {
+      "id": "math.frac.parts_whole",
+      "subject": "math",
+      "name": "Fractions as parts of a whole",
+      "description": "A fraction a/b names a parts out of b equal parts of a whole.",
+      "prerequisites": [],
+      "grade": 4
+    },
+    {
+      "id": "math.frac.equivalence",
+      "subject": "math",
+      "name": "Equivalent fractions",
+      "description": "Multiplying or dividing numerator and denominator by the same number gives an equal fraction; adding the same amount does not.",
+      "prerequisites": [
+        "math.frac.parts_whole"
+      ],
+      "grade": 4
+    },
+    {
+      "id": "math.frac.compare",
+      "subject": "math",
+      "name": "Comparing fractions",
+      "description": "Compare fractions using common denominators or numerators; a bigger denominator means smaller pieces.",
+      "prerequisites": [
+        "math.frac.equivalence"
+      ],
+      "grade": 5
+    },
+    {
+      "id": "math.frac.common_denominator",
+      "subject": "math",
+      "name": "Common denominators",
+      "description": "Rewrite fractions with the same denominator using equivalent fractions.",
+      "prerequisites": [
+        "math.frac.equivalence"
+      ],
+      "grade": 5
+    },
+    {
+      "id": "math.frac.add_sub",
+      "subject": "math",
+      "name": "Adding and subtracting fractions",
+      "description": "Add or subtract numerators only after the denominators match; the denominator stays the same.",
+      "prerequisites": [
+        "math.frac.common_denominator"
+      ],
+      "grade": 5
+    },
+    {
+      "id": "math.frac.multiply",
+      "subject": "math",
+      "name": "Multiplying fractions",
+      "description": "Multiply numerators together and denominators together.",
+      "prerequisites": [
+        "math.frac.equivalence"
+      ],
+      "grade": 6
+    },
+    {
+      "id": "math.ratio.concept",
+      "subject": "math",
+      "name": "Ratios",
+      "description": "A ratio compares two quantities multiplicatively; equivalent ratios scale both terms by the same factor.",
+      "prerequisites": [
+        "math.frac.equivalence"
+      ],
+      "grade": 6
+    },
+    {
+      "id": "math.ratio.unit_rate",
+      "subject": "math",
+      "name": "Unit rates",
+      "description": "A unit rate says how much of one quantity per 1 of the other.",
+      "prerequisites": [
+        "math.ratio.concept"
+      ],
+      "grade": 6
+    },
+    {
+      "id": "math.ratio.proportion",
+      "subject": "math",
+      "name": "Proportional reasoning",
+      "description": "Solve for a missing value by scaling with a constant multiplier or unit rate.",
+      "prerequisites": [
+        "math.ratio.unit_rate",
+        "math.frac.multiply"
+      ],
+      "grade": 7
+    },
+    {
+      "id": "phys.kin.position_displacement",
+      "subject": "physics",
+      "name": "Position and displacement",
+      "description": "Position locates an object; displacement is the change in position, with direction.",
+      "prerequisites": [],
+      "grade": 8
+    },
+    {
+      "id": "phys.kin.speed_velocity",
+      "subject": "physics",
+      "name": "Speed and velocity",
+      "description": "Velocity is the rate of change of position, with direction.",
+      "prerequisites": [
+        "phys.kin.position_displacement"
+      ],
+      "grade": 8
+    },
+    {
+      "id": "phys.kin.acceleration",
+      "subject": "physics",
+      "name": "Acceleration",
+      "description": "Acceleration is the rate of change of velocity; it can be nonzero even when velocity is momentarily zero.",
+      "prerequisites": [
+        "phys.kin.speed_velocity"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "phys.force.concept",
+      "subject": "physics",
+      "name": "Force",
+      "description": "A force is a push or pull; it is a vector with size and direction.",
+      "prerequisites": [],
+      "grade": 8
+    },
+    {
+      "id": "phys.force.gravity_weight",
+      "subject": "physics",
+      "name": "Gravity and weight",
+      "description": "Gravity pulls on mass; weight is that force. All objects accelerate equally under gravity without air resistance.",
+      "prerequisites": [
+        "phys.force.concept"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "phys.kin.free_fall",
+      "subject": "physics",
+      "name": "Free fall",
+      "description": "Objects under gravity alone have constant downward acceleration of about 9.8 m/s^2, whatever their velocity.",
+      "prerequisites": [
+        "phys.kin.acceleration",
+        "phys.force.gravity_weight"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "phys.force.newton1",
+      "subject": "physics",
+      "name": "Newton's first law",
+      "description": "With zero net force an object keeps its velocity; motion does not need a force.",
+      "prerequisites": [
+        "phys.force.concept",
+        "phys.kin.speed_velocity"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "phys.force.newton2",
+      "subject": "physics",
+      "name": "Newton's second law",
+      "description": "Net force = mass x acceleration.",
+      "prerequisites": [
+        "phys.force.newton1",
+        "phys.kin.acceleration"
+      ],
+      "grade": 10
+    },
+    {
+      "id": "phys.force.newton3",
+      "subject": "physics",
+      "name": "Newton's third law",
+      "description": "Forces come in equal and opposite pairs acting on different objects.",
+      "prerequisites": [
+        "phys.force.concept"
+      ],
+      "grade": 10
+    },
+    {
+      "id": "chem.atom.structure",
+      "subject": "chemistry",
+      "name": "Atomic structure",
+      "description": "Atoms have a nucleus of protons and neutrons surrounded by electrons.",
+      "prerequisites": [],
+      "grade": 8
+    },
+    {
+      "id": "chem.atom.atomic_mass_number",
+      "subject": "chemistry",
+      "name": "Atomic number and mass number",
+      "description": "Atomic number = protons; mass number = protons + neutrons.",
+      "prerequisites": [
+        "chem.atom.structure"
+      ],
+      "grade": 8
+    },
+    {
+      "id": "chem.atom.isotopes_ions",
+      "subject": "chemistry",
+      "name": "Isotopes and ions",
+      "description": "Isotopes differ in neutrons; ions differ in electrons from protons, giving charge.",
+      "prerequisites": [
+        "chem.atom.atomic_mass_number"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "chem.periodic.table",
+      "subject": "chemistry",
+      "name": "The periodic table",
+      "description": "Elements are ordered by atomic number; groups share valence electrons.",
+      "prerequisites": [
+        "chem.atom.structure"
+      ],
+      "grade": 8
+    },
+    {
+      "id": "chem.bond.ionic_covalent",
+      "subject": "chemistry",
+      "name": "Ionic and covalent bonding",
+      "description": "Ionic bonds transfer electrons; covalent bonds share them.",
+      "prerequisites": [
+        "chem.periodic.table"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "chem.formula.compounds",
+      "subject": "chemistry",
+      "name": "Chemical formulas",
+      "description": "Subscripts count atoms of each element in a compound.",
+      "prerequisites": [
+        "chem.bond.ionic_covalent"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "chem.mole.concept",
+      "subject": "chemistry",
+      "name": "The mole",
+      "description": "One mole is 6.02 x 10^23 particles.",
+      "prerequisites": [
+        "chem.atom.atomic_mass_number"
+      ],
+      "grade": 10
+    },
+    {
+      "id": "chem.mole.molar_mass",
+      "subject": "chemistry",
+      "name": "Molar mass",
+      "description": "Molar mass in g/mol is the sum of atomic masses weighted by subscripts.",
+      "prerequisites": [
+        "chem.mole.concept",
+        "chem.formula.compounds"
+      ],
+      "grade": 10
+    },
+    {
+      "id": "chem.reaction.balancing",
+      "subject": "chemistry",
+      "name": "Balancing equations",
+      "description": "Coefficients are added so each element has equal atoms on both sides; subscripts never change.",
+      "prerequisites": [
+        "chem.formula.compounds"
+      ],
+      "grade": 9
+    },
+    {
+      "id": "chem.reaction.stoichiometry",
+      "subject": "chemistry",
+      "name": "Stoichiometry",
+      "description": "Coefficients give mole ratios used to convert between reactants and products.",
+      "prerequisites": [
+        "chem.reaction.balancing",
+        "chem.mole.molar_mass"
+      ],
+      "grade": 10
+    }
+  ]
+}
